@@ -13,7 +13,7 @@
 
 static sf::Shader shader;
 static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
-static sf::Text text;
+static sf::Texture numbersTexture;
 static bool initialized = false;
 
 static const sf::Color BALL_COLORS[] = {
@@ -25,7 +25,7 @@ static const sf::Color BALL_COLORS[] = {
     sf::Color(255, 165, 0),
     sf::Color(34, 139, 34),
     sf::Color(128, 0, 0),
-    sf::Color(0, 0, 0),
+    sf::Color(25, 25, 25),
 };
 
 static const sf::Vector2f UVS[] = {
@@ -44,8 +44,9 @@ Ball::Ball(uint8_t number) : m_Number(number) {
 }
 
 void Ball::render(sf::RenderWindow &window) const {
-    shader.setUniform("u_Number", m_Number);
     shader.setUniform("u_Color", sf::Glsl::Vec4(getColor()));
+    shader.setUniform("u_Number", m_Number);
+    shader.setUniform("u_NumbersTexture", numbersTexture);
 
     sf::Transform transform;
     transform.translate(m_Position);
@@ -67,7 +68,8 @@ const sf::Color &Ball::getColor() const {
 
 void Ball::init() {
     initialized = true;
-    shader.loadFromFile("res/shaders/ball_frag.glsl", sf::Shader::Type::Fragment);
+    assert(shader.loadFromFile("res/shaders/ball_frag.glsl", sf::Shader::Type::Fragment));
+    assert(numbersTexture.loadFromFile("res/numbers.gif"));
 
     sf::Vertex v;
     for(int i=0; i<4; ++i) {

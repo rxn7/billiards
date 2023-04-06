@@ -1,4 +1,5 @@
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <memory>
 
@@ -13,19 +14,6 @@ static sf::View view;
 
 int main(int argc, const char **argv) {
     init();
-
-    int ballToInspect = rand() % 15;
-
-    for(int i=0; i<=15; ++i) {
-        Ball &ball = balls.emplace_back(i);
-
-        if(i != ballToInspect) {
-            ball.m_Position.x = rand() % static_cast<int>(table.getSize().x) - table.getSize().x * 0.5f;
-            ball.m_Position.y = rand() % static_cast<int>(table.getSize().y) - table.getSize().y * 0.5f;
-        } else {
-            ball.m_Position = {0,0};
-        }
-    }
 
     while(window->isOpen()) {
         sf::Event event;
@@ -66,6 +54,10 @@ void handleEvent(sf::Event &event) {
                     window->setView(view);
                     break;
 
+                case sf::Keyboard::Space:
+                    randomizeBallsPositions();
+                    break;
+
                 default: break;
             }
             break;
@@ -101,10 +93,26 @@ void init() {
 
     std::srand(time(0));
 
+    for(int i=0; i<15; ++i) balls.emplace_back(i);
+
+    randomizeBallsPositions();
+
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billard by rxn7");
     window->setVerticalSyncEnabled(true);
 
     view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     view.setCenter(0.0f, 0.0f);
     resize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
+}
+
+void randomizeBallsPositions() {
+    int ballToInspect = rand() % 15;
+    for(int i=0; i<=15; ++i) {
+        if(i != ballToInspect) {
+            balls[i].m_Position.x = rand() % static_cast<int>(table.getSize().x) - table.getSize().x * 0.5f;
+            balls[i].m_Position.y = rand() % static_cast<int>(table.getSize().y) - table.getSize().y * 0.5f;
+        } else {
+            balls[i].m_Position = {0,0};
+        }
+    }
 }
