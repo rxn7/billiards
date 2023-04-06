@@ -1,6 +1,7 @@
 #pragma once
 
 #include "table.h"
+#include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>

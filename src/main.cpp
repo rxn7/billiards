@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "audio.h"
 #include "main.h"
 #include "ball.h"
 #include "mathUtils.h"
@@ -51,6 +52,7 @@ int main(int argc, const char **argv) {
 }
 
 void cueHitCueBall(sf::Vector2f direction, float force) {
+    // TODO: Play sound
     cueBall.m_Velocity = direction * std::clamp(force, 5.0f, 3000.0f);
 }
 
@@ -78,6 +80,8 @@ void init() {
         std::exit(EXIT_FAILURE);
         return;
     }
+
+    Audio::init();
 
     for(int i=0; i<=15; ++i) balls.emplace_back(i);
 
@@ -127,7 +131,7 @@ void handleEvent(sf::Event &event) {
         }
 
         case sf::Event::MouseButtonPressed: {
-            sf::Vector2 pos = window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+            sf::Vector2f pos = window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
             if(cueBall.isPointOverlapping(pos)) {
                 isCueBallHeld = true;
                 cueBallHeldStartPosition = pos;

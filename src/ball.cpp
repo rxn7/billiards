@@ -1,5 +1,6 @@
 #include "ball.h"
 
+#include "audio.h"
 #include "mathUtils.h"
 #include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -135,6 +136,8 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
                 ball.m_Velocity.x *= -1.0f;
             if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
                 ball.m_Velocity.y *= -1.0f;
+
+            Audio::play(Audio::AudioType::BALL_WITH_TABLE_COLLISION);
         }
     }
 
@@ -149,6 +152,8 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
 
         col.ball->m_Velocity -= forceVector;
         col.target->m_Velocity += forceVector;
+        
+        Audio::play(Audio::AudioType::BALL_WITH_BALL_COLLISION);
     }
 }
 
