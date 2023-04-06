@@ -24,6 +24,7 @@ public:
     sf::Vector2f m_Velocity = {0,0};
     sf::Vector2f m_Position = {0,0};
     float m_Scale = 1.0f;
+    float m_Angle = 0.0f;
 
 private:
     uint8_t m_Number = 8;

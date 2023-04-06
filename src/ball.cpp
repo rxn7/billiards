@@ -41,11 +41,14 @@ Ball::Ball(uint8_t number) : m_Number(number) {
 
     if(!initialized)
         init();
+
+    m_Angle = rand() % 360;
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
     shader.setUniform("u_Color", sf::Glsl::Vec4(getColor()));
     shader.setUniform("u_Number", m_Number);
+    shader.setUniform("u_Angle", m_Angle);
     shader.setUniform("u_NumbersTexture", numbersTexture);
 
     sf::Transform transform;

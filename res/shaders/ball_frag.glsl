@@ -1,12 +1,43 @@
 #version 130 
+
+#define PI 3.14159265358
+
 uniform vec4 u_Color;
 uniform int u_Number;
+uniform float u_Angle;
 uniform sampler2D u_NumbersTexture;
 
 const float numberTextArea = 0.28;
 const float numberTextAreaEdge = 0.0033;
 const vec2 lightPosition = vec2(0.0);
 const vec3 white = vec3(1.0);
+
+mat4 rotateX(float angle) {
+  return mat4(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, cos(angle), -sin(angle), 0.0,
+    0.0, sin(angle), cos(angle), 0.0,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 rotateY(float angle) {
+  return mat4(
+    cos(angle), 0.0, sin(angle), 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    -sin(angle), 0.0, cos(angle), 0.0,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
+
+mat4 rotateZ(float angle) {
+  return mat4(
+    cos(angle), -sin(angle), 0.0, 0.0,
+    sin(angle), cos(angle), 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
+  );
+}
 
 vec3 colorLookup(vec3 point, int number) {
   if(number == 0)
@@ -57,14 +88,20 @@ void main() {
   float dist = distance(center, gl_TexCoord[0].xy) * 2.0;
   float alpha = dist > 0.99 ? 1.0 - smoothstep(0.99, 1.0, dist) : 1.0;
 
+
   vec2 uv = gl_TexCoord[0].xy * 2.0 - 1.0;
   vec3 normal = vec3(uv, sqrt(1.0 - clamp(dot(uv, uv), 0.0, 1.0)));
   vec3 map = 0.5 + 0.5 * normal;
 
+  vec4 vert = vec4(normal, 0.0);
+  vert = rotateX(u_Angle) * vert;
+  vert = rotateZ(u_Angle * PI / 3.0) * vert;
+  vert = rotateY(u_Angle / 3.0) * vert;
+
   vec3 light = normalize(vec3(lightPosition.x, lightPosition.y, 1));
   float brightness = clamp(dot(light, normal), 0.1, 1.0);
 
-  vec3 diffuse = colorLookup(normal, u_Number) * brightness;
+  vec3 diffuse = colorLookup(vert.xyz, u_Number) * brightness;
   float spec = specular(light, normal);
 
   gl_FragColor = vec4(diffuse + spec, alpha);
