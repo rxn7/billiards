@@ -13,6 +13,7 @@
 #include <SFML/Window/Mouse.hpp>
 #include <cassert>
 #include <cmath>
+#include "collision.h"
 
 static sf::Shader shader;
 static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
@@ -48,6 +49,11 @@ Ball::Ball(uint8_t number) : m_Number(number) {
 
 void Ball::update(float dt) {
     m_Position += m_Velocity * dt;
+
+    float speed = MathUtils::vecLength(m_Velocity);
+    sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
+    sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+    m_Velocity += dragForce * dt;
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
@@ -65,11 +71,13 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
 }
 
 void Ball::applyPhysics(std::vector<Ball> &balls) {
-    auto isOverlapping = [](const Ball &a, const Ball &b) {
+    auto overlapCheck = [](const Ball &a, const Ball &b) {
         sf::Vector2f delta = a.m_Position - b.m_Position;
         float distSqr = MathUtils::vecLengthSqr(delta);
         return std::make_tuple(distSqr <= Ball::DIAMETER * Ball::DIAMETER, distSqr);
     };
+
+    std::vector<Collision> collisions;
 
     for(Ball &ball : balls)  {
         for(Ball &target : balls) {
@@ -77,11 +85,11 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
             if(ball.m_Number == target.m_Number)
                 continue;
 
-            bool overlaps;
+            bool isOverlapping;
             float distanceSquared;
-            std::tie(overlaps, distanceSquared) = isOverlapping(ball, target);
+            std::tie(isOverlapping, distanceSquared) = overlapCheck(ball, target);
 
-            if(!overlaps)
+            if(!isOverlapping)
                 continue;
 
             float distance = std::sqrt(distanceSquared);
@@ -90,6 +98,28 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
             sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
             ball.m_Position -= displace;
             target.m_Position += displace;
+
+            collisions.emplace_back(
+                &ball,
+                &target,
+                distance
+            );
+        }
+    }
+
+    for(const Collision &col : collisions) {
+        if(col.target == nullptr) {
+            // TODO: Wall collisions
+        } else {
+            sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
+            sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
+            sf::Vector2f normal = positionDelta / col.distance;
+
+            float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / Ball::DIAMETER;
+            sf::Vector2f forceVector = force * Ball::RADIUS * normal;
+
+            col.ball->m_Velocity -= forceVector;
+            col.target->m_Velocity += forceVector;
         }
     }
 }
@@ -112,7 +142,7 @@ void Ball::init() {
     sf::Vertex v;
     for(int i=0; i<4; ++i) {
         v.texCoords = UVS[i],
-        v.position = UVS[i] * 2.0f - sf::Vector2(1.0f, 1.0f);
+        v.position = UVS[i] * 2.0f - sf::Vector2f(1.0f, 1.0f);
         vertexArray.append(v);
     }
 }
