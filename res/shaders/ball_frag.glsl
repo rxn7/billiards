@@ -93,9 +93,9 @@ void main() {
   vec3 map = 0.5 + 0.5 * normal;
 
   vec4 vert = vec4(normal, 0.0);
+  vert = rotateY(u_Rotation.y) * vert;
   vert = rotateX(u_Rotation.x) * vert;
   vert = rotateZ(u_Rotation.z) * vert;
-  vert = rotateY(u_Rotation.y) * vert;
 
   vec3 light = normalize(vec3(lightPosition.x, lightPosition.y, 1));
   float brightness = clamp(dot(light, normal), 0.1, 1.0);
