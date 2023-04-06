@@ -19,7 +19,7 @@ private:
     static void init();
 
 public:
-    static constexpr float RADIUS = 15.0f;
+    static constexpr float RADIUS = 20.0f;
     static constexpr float DIAMETER = RADIUS * 2.0f;
     sf::Vector2f m_Velocity = {0,0};
     sf::Vector2f m_Position = {0,0};

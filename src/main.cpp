@@ -10,6 +10,8 @@
 #include "ball.h"
 #include "table.h"
 
+static constexpr float INIT_CUE_BALL_POSITION_NORMALIZED = 0.2f;
+
 static std::unique_ptr<sf::RenderWindow> window;
 static std::vector<Ball> balls;
 static Table table;
@@ -110,7 +112,7 @@ void init() {
 
 void setupBalls() {
     uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
-    sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.35, 0.0f);
+    sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.2, 0.0f);
 
     static const float width = sqrt(3.0f) * Ball::RADIUS;
     static const float height = Ball::DIAMETER;
@@ -124,4 +126,6 @@ void setupBalls() {
             );
         }
     }
+
+    balls[0].m_Position = sf::Vector2f(-table.getSize().x * (1.0 - INIT_CUE_BALL_POSITION_NORMALIZED) * 0.5f, 0.0f);
 }
