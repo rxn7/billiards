@@ -43,7 +43,7 @@ Ball::Ball(uint8_t number) : m_Number(number) {
         init();
 }
 
-void Ball::render(sf::RenderWindow &window) const {
+void Ball::render(sf::RenderTarget &renderTarget) const {
     shader.setUniform("u_Color", sf::Glsl::Vec4(getColor()));
     shader.setUniform("u_Number", m_Number);
     shader.setUniform("u_NumbersTexture", numbersTexture);
@@ -53,7 +53,7 @@ void Ball::render(sf::RenderWindow &window) const {
     transform.scale(RADIUS * m_Scale, RADIUS * m_Scale);
 
     sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &shader);
-    window.draw(vertexArray, states);
+    renderTarget.draw(vertexArray, states);
 }
 
 const sf::Color &Ball::getColor() const {

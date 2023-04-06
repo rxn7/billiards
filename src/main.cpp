@@ -1,7 +1,10 @@
+#include <SFML/Window/ContextSettings.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 #include <iostream>
 #include <memory>
+#include <cmath>
 
 #include "main.h"
 #include "ball.h"
@@ -54,8 +57,8 @@ void handleEvent(sf::Event &event) {
                     window->setView(view);
                     break;
 
-                case sf::Keyboard::Space:
-                    randomizeBallsPositions();
+                case sf::Keyboard::R:
+                    setupBalls();
                     break;
 
                 default: break;
@@ -93,11 +96,11 @@ void init() {
 
     std::srand(time(0));
 
-    for(int i=0; i<15; ++i) balls.emplace_back(i);
+    for(int i=0; i<=15; ++i) balls.emplace_back(i);
 
-    randomizeBallsPositions();
+    setupBalls();
 
-    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billard by rxn7");
+    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billard by rxn7", sf::Style::Default);
     window->setVerticalSyncEnabled(true);
 
     view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
@@ -105,14 +108,20 @@ void init() {
     resize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
 }
 
-void randomizeBallsPositions() {
-    int ballToInspect = rand() % 15;
-    for(int i=0; i<=15; ++i) {
-        if(i != ballToInspect) {
-            balls[i].m_Position.x = rand() % static_cast<int>(table.getSize().x) - table.getSize().x * 0.5f;
-            balls[i].m_Position.y = rand() % static_cast<int>(table.getSize().y) - table.getSize().y * 0.5f;
-        } else {
-            balls[i].m_Position = {0,0};
+void setupBalls() {
+    uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
+    sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.35, 0.0f);
+
+    static const float width = sqrt(3.0f) * Ball::RADIUS;
+    static const float height = Ball::DIAMETER;
+
+    int idx = 0;
+    for(int row=-2; row<=2; ++row) {
+        for(int col=row; col<=2; ++col) {
+            balls[numbers[idx++]].m_Position = position + sf::Vector2f(
+                col * width,
+                row * height - col * Ball::RADIUS + Ball::DIAMETER
+            );
         }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "main.h"
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -14,7 +15,7 @@ class Table {
 
 public:
     Table(sf::Vector2f size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, sf::Color color = TableColors::TOURNAMENT_BLUE);
-    void render(sf::RenderWindow &window) const;
+    void render(sf::RenderTarget &renderTarget) const;
     inline const sf::Vector2f &getSize() const { return m_Size; }
 
 public:
