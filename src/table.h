@@ -14,13 +14,15 @@ class Table {
 
 public:
     Table(sf::Vector2f size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, sf::Color color = TableColors::TOURNAMENT_BLUE);
-    void Draw(sf::RenderWindow &window) const;
+    void render(sf::RenderWindow &window) const;
+    inline const sf::Vector2f &getSize() const { return m_Size; }
+
+public:
+    static constexpr float DEFAULT_WIDTH = BASE_WINDOW_WIDTH * 0.75f;
+    static constexpr float DEFAULT_HEIGHT = DEFAULT_WIDTH * 0.5f;
 
 private:
     sf::Vector2f m_Size;
     sf::Color m_Color;
     sf::RectangleShape m_Shape;
-
-    static constexpr float DEFAULT_WIDTH = BASE_WINDOW_WIDTH * 0.75f;
-    static constexpr float DEFAULT_HEIGHT = DEFAULT_WIDTH * 0.5f;
 };

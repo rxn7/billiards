@@ -9,7 +9,7 @@ CFLAGS := -std=c++20
 SRC := $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-all: create_dirs $(OBJ) $(OUT)
+all: create_dirs $(OBJ) $(OUT) copy_res
 
 $(OBJ_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
@@ -21,6 +21,9 @@ $(OUT): $(OBJ)
 
 create_dirs:
 	@mkdir -p $(OBJ_DIR) $(BIN_DIR)
+
+copy_res:
+	@cp -r res bin/
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)

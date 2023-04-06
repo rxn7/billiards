@@ -6,6 +6,6 @@ Table::Table(sf::Vector2f size, sf::Color color) : m_Size(size), m_Color(color) 
     m_Shape.setOrigin(m_Size * 0.5f);
 }
 
-void Table::Draw(sf::RenderWindow &window) const {
+void Table::render(sf::RenderWindow &window) const {
     window.draw(m_Shape);
 }

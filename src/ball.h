@@ -1,6 +1,8 @@
 #pragma once
 
+#include "table.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 class Ball {
@@ -9,16 +11,19 @@ public:
 
 public:
     void render(sf::RenderWindow &window) const;
-
-public:
-    inline bool isSolid() const { return m_Number < 9; }
+    inline bool isStriped() const { return m_Number > 8; }
     inline uint8_t getNumber() const { return m_Number; }
-    sf::Vector2f m_Velocity;
+    const sf::Color &getColor() const;
 
 private:
-    sf::CircleShape m_Shape;
-    sf::Color m_Color;
-    sf::Vector2f m_Position;
-    float m_Radius;
-    uint8_t m_Number;
+    static void init();
+
+public:
+    sf::Vector2f m_Velocity = {0,0};
+    sf::Vector2f m_Position = {0,0};
+    float m_Scale = 1.0f;
+
+private:
+    static constexpr float RADIUS = 25.7175f;
+    uint8_t m_Number = 8;
 };

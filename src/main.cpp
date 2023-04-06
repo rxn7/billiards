@@ -14,13 +14,31 @@ static sf::View view;
 int main(int argc, const char **argv) {
     init();
 
+    int ballToInspect = rand() % 15;
+
+    for(int i=0; i<=15; ++i) {
+        Ball &ball = balls.emplace_back(i);
+
+        if(i != ballToInspect) {
+            ball.m_Position.x = rand() % static_cast<int>(table.getSize().x) - table.getSize().x * 0.5f;
+            ball.m_Position.y = rand() % static_cast<int>(table.getSize().y) - table.getSize().y * 0.5f;
+        } else {
+            ball.m_Position = {0,0};
+        }
+    }
+
     while(window->isOpen()) {
         sf::Event event;
         while(window->pollEvent(event))
             handleEvent(event);
 
         window->clear();
-        table.Draw(*window);
+
+        table.render(*window);
+
+        for(Ball &ball : balls)
+            ball.render(*window);
+
         window->display();
     }
 }
@@ -35,6 +53,22 @@ void handleEvent(sf::Event &event) {
             resize(event.size.width, event.size.height);
             break;
         }
+
+        case sf::Event::KeyPressed:
+            switch(event.key.code) {
+                case sf::Keyboard::I:
+                    view.zoom(1.1);
+                    window->setView(view);
+                    break;
+
+                case sf::Keyboard::O:
+                    view.zoom(0.9);
+                    window->setView(view);
+                    break;
+
+                default: break;
+            }
+            break;
 
         default: break;
     }
@@ -59,6 +93,14 @@ void resize(unsigned int width, unsigned int height) {
 }
 
 void init() {
+    if(!sf::Shader::isAvailable()) {
+        std::cerr << "ERROR: Your graphics card doesn't support GLSL shaders.\n";
+        std::exit(EXIT_FAILURE);
+        return;
+    }
+
+    std::srand(time(0));
+
     window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billard by rxn7");
     window->setVerticalSyncEnabled(true);
 
