@@ -56,7 +56,18 @@ void Ball::update(float dt) {
     sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
     m_Velocity += dragForce * dt;
 
-    m_Rotation += sf::Vector3f(m_Velocity.x, m_Velocity.y, 0.0f) / RADIUS * dt;
+    // Calculate the angular velocity
+    float direction = std::atan2(m_Velocity.y, m_Velocity.x);
+    sf::Vector3f angularVelocity(std::sin(direction), -std::cos(direction), 0.0f);
+    angularVelocity *= speed / RADIUS;
+
+    // Calculate the rotation direction
+    sf::Vector3f surfaceNormal(0.0f, 0.0f, 1.0f);
+    sf::Vector3f rotationDirection = MathUtils::cross(surfaceNormal, (sf::Vector3f(std::cos(direction), std::sin(direction), 0.0f)));
+    float rotationSign = (rotationDirection.z > 0.0f) ? -1.0f : 1.0f;
+
+    // Update the rotation
+    m_Rotation += angularVelocity * dt * rotationSign;
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {

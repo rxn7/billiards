@@ -35,7 +35,11 @@ namespace MathUtils {
         return v / len;
     }
 
-    inline sf::Vector3f cross(const sf::Vector2f &v1, const sf::Vector2f &v2) {
-        return sf::Vector3f(0, 0, v1.x * v2.y - v1.y * v2.x);
+    inline sf::Vector3f cross(const sf::Vector3f &a, const sf::Vector3f &b) {
+        return sf::Vector3f(
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        );
     }
 }
