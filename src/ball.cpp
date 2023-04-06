@@ -56,8 +56,15 @@ void Ball::render(sf::RenderWindow &window) const {
 }
 
 const sf::Color &Ball::getColor() const {
-    return BALL_COLORS[(m_Number-1) % 8];
+    if(m_Number == 0)
+        return BALL_COLORS[0];
+
+    if(m_Number == 8)
+        return BALL_COLORS[8];
+
+    return BALL_COLORS[(m_Number) % 8];
 } 
+
 void Ball::init() {
     initialized = true;
     shader.loadFromFile("res/shaders/ball_frag.glsl", sf::Shader::Type::Fragment);

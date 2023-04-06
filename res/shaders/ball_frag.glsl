@@ -1,7 +1,7 @@
 uniform vec4 u_Color;
 uniform int u_Number;
 
-const vec2 lightPosition = vec2(0.0, 0.0);
+const vec2 lightPosition = vec2(0.0);
 const vec3 white = vec3(1.0);
 
 vec3 colorLookup(vec3 point) {
@@ -12,7 +12,7 @@ vec3 colorLookup(vec3 point) {
   if(u_Number > 8 && abs(point.y) > 0.55)
       return mix(vec3(u_Color), white, smoothstep(0.55, 0.56, abs(point.y)));
 
-  float dist = distance(point.xy, vec2(0,0));
+  float dist = distance(point.xy, vec2(0.0));
   if(dist < 0.4) 
     return white;
 
