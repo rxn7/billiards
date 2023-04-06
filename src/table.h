@@ -11,11 +11,13 @@ namespace TableColors {
     const sf::Color TOURNAMENT_BLUE = {0, 98, 162};
 }
 
-class Table {
+struct Ball;
 
+class Table {
 public:
     Table(sf::Vector2f size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, sf::Color color = TableColors::TOURNAMENT_BLUE);
     void render(sf::RenderTarget &renderTarget) const;
+    std::pair<bool, sf::Vector2f> isBallOverlapping(const Ball &ball) const;
     inline const sf::Vector2f &getSize() const { return m_Size; }
 
 public:

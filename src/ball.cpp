@@ -1,4 +1,6 @@
 #include "ball.h"
+
+#include "mathUtils.h"
 #include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -10,6 +12,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <cassert>
+#include <cmath>
+#include "collision.h"
 
 static sf::Shader shader;
 static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
@@ -41,14 +45,22 @@ Ball::Ball(uint8_t number) : m_Number(number) {
 
     if(!initialized)
         init();
+}
 
-    m_Angle = rand() % 360;
+void Ball::update(float dt) {
+    m_Position += m_Velocity * dt;
+
+    // Apply drag
+    float speed = MathUtils::vecLength(m_Velocity);
+    sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
+    sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+    m_Velocity += dragForce * dt;
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
     shader.setUniform("u_Color", sf::Glsl::Vec4(getColor()));
     shader.setUniform("u_Number", m_Number);
-    shader.setUniform("u_Angle", m_Angle);
+    shader.setUniform("u_Rotation", m_Rotation);
     shader.setUniform("u_NumbersTexture", numbersTexture);
 
     sf::Transform transform;
@@ -57,6 +69,64 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
 
     sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &shader);
     renderTarget.draw(vertexArray, states);
+}
+
+void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
+    auto overlapCheck = [](const Ball &a, const Ball &b) {
+        sf::Vector2f delta = a.m_Position - b.m_Position;
+        float distSqr = MathUtils::vecLengthSqr(delta);
+        return std::make_tuple(distSqr <= Ball::DIAMETER * Ball::DIAMETER, distSqr);
+    };
+
+    std::vector<Collision> collisions;
+
+    for(Ball &ball : balls)  {
+        for(Ball &target : balls) {
+            // NOTE: This will not work if there would be multiple balls with the same number 
+            if(ball.m_Number == target.m_Number)
+                continue;
+
+            bool isOverlapping;
+            float distanceSquared;
+            std::tie(isOverlapping, distanceSquared) = overlapCheck(ball, target);
+
+            if(!isOverlapping)
+                continue;
+
+            float distance = std::sqrt(distanceSquared);
+            float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
+
+            sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
+            ball.m_Position -= displace;
+            target.m_Position += displace;
+
+            collisions.emplace_back(
+                &ball,
+                &target
+            );
+        }
+
+        std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
+        if(tableOverlapResult.first) {
+            if(std::fabs(tableOverlapResult.second.x) > 0.1f) 
+                ball.m_Velocity.x *= -1.0f;
+            if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
+                ball.m_Velocity.y *= -1.0f;
+        }
+    }
+
+    for(const Collision &col : collisions) {
+        sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
+        sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
+        float distance = MathUtils::vecLength(positionDelta);
+        sf::Vector2f normal = positionDelta / distance;
+
+        float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
+        sf::Vector2f forceVector = force * Ball::MASS * normal;
+
+        col.ball->m_Velocity -= forceVector;
+        col.target->m_Velocity += forceVector;
+    }
 }
 
 const sf::Color &Ball::getColor() const {
@@ -77,7 +147,7 @@ void Ball::init() {
     sf::Vertex v;
     for(int i=0; i<4; ++i) {
         v.texCoords = UVS[i],
-        v.position = UVS[i] * 2.0f - sf::Vector2(1.0f, 1.0f);
+        v.position = UVS[i] * 2.0f - sf::Vector2f(1.0f, 1.0f);
         vertexArray.append(v);
     }
 }

@@ -4,7 +4,7 @@
 
 uniform vec4 u_Color;
 uniform int u_Number;
-uniform float u_Angle;
+uniform vec3 u_Rotation;
 uniform sampler2D u_NumbersTexture;
 
 const float numberTextArea = 0.28;
@@ -88,15 +88,14 @@ void main() {
   float dist = distance(center, gl_TexCoord[0].xy) * 2.0;
   float alpha = dist > 0.99 ? 1.0 - smoothstep(0.99, 1.0, dist) : 1.0;
 
-
   vec2 uv = gl_TexCoord[0].xy * 2.0 - 1.0;
   vec3 normal = vec3(uv, sqrt(1.0 - clamp(dot(uv, uv), 0.0, 1.0)));
   vec3 map = 0.5 + 0.5 * normal;
 
   vec4 vert = vec4(normal, 0.0);
-  vert = rotateX(u_Angle) * vert;
-  vert = rotateZ(u_Angle * PI / 3.0) * vert;
-  vert = rotateY(u_Angle / 3.0) * vert;
+  vert = rotateX(u_Rotation.x) * vert;
+  vert = rotateZ(u_Rotation.z) * vert;
+  vert = rotateY(u_Rotation.y) * vert;
 
   vec3 light = normalize(vec3(lightPosition.x, lightPosition.y, 1));
   float brightness = clamp(dot(light, normal), 0.1, 1.0);
