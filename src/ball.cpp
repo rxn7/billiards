@@ -101,8 +101,7 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
 
             collisions.emplace_back(
                 &ball,
-                &target,
-                distance
+                &target
             );
         }
     }
@@ -113,7 +112,8 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
         } else {
             sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
             sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
-            sf::Vector2f normal = positionDelta / col.distance;
+            float distance = MathUtils::vecLength(positionDelta);
+            sf::Vector2f normal = positionDelta / distance;
 
             float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / Ball::DIAMETER;
             sf::Vector2f forceVector = force * Ball::RADIUS * normal;

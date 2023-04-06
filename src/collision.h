@@ -7,5 +7,4 @@ struct Ball;
 struct Collision {
     Ball *ball;
     Ball *target;
-    float distance;
 };
