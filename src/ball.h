@@ -30,6 +30,7 @@ public:
     static constexpr float RADIUS = 20.0f;
     static constexpr float DIAMETER = RADIUS * 2.0f;
     static constexpr float DRAG_COEFFICIENT = 0.3f;
+    static constexpr float MASS = 0.160f;
     sf::Vector2f m_Velocity = {0,0};
     sf::Vector2f m_Position = {0,0};
     sf::Vector3f m_Rotation = {0,0,0};

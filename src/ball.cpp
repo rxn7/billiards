@@ -50,6 +50,7 @@ Ball::Ball(uint8_t number) : m_Number(number) {
 void Ball::update(float dt) {
     m_Position += m_Velocity * dt;
 
+    // Apply drag
     float speed = MathUtils::vecLength(m_Velocity);
     sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
     sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
@@ -115,8 +116,8 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
             float distance = MathUtils::vecLength(positionDelta);
             sf::Vector2f normal = positionDelta / distance;
 
-            float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / Ball::DIAMETER;
-            sf::Vector2f forceVector = force * Ball::RADIUS * normal;
+            float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
+            sf::Vector2f forceVector = force * Ball::MASS * normal;
 
             col.ball->m_Velocity -= forceVector;
             col.target->m_Velocity += forceVector;
