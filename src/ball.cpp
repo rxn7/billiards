@@ -85,7 +85,7 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
                 continue;
 
             float distance = std::sqrt(distanceSquared);
-            float overlap = (distance - Ball::DIAMETER) * 8.5f / distance;
+            float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
 
             sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
             ball.m_Position -= displace;
