@@ -71,7 +71,7 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
     renderTarget.draw(vertexArray, states);
 }
 
-void Ball::applyPhysics(std::vector<Ball> &balls) {
+void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
     auto overlapCheck = [](const Ball &a, const Ball &b) {
         sf::Vector2f delta = a.m_Position - b.m_Position;
         float distSqr = MathUtils::vecLengthSqr(delta);
@@ -105,23 +105,27 @@ void Ball::applyPhysics(std::vector<Ball> &balls) {
                 &target
             );
         }
+
+        std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
+        if(tableOverlapResult.first) {
+            if(std::fabs(tableOverlapResult.second.x) > 0.1f) 
+                ball.m_Velocity.x *= -1.0f;
+            if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
+                ball.m_Velocity.y *= -1.0f;
+        }
     }
 
     for(const Collision &col : collisions) {
-        if(col.target == nullptr) {
-            // TODO: Wall collisions
-        } else {
-            sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
-            sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
-            float distance = MathUtils::vecLength(positionDelta);
-            sf::Vector2f normal = positionDelta / distance;
+        sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
+        sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
+        float distance = MathUtils::vecLength(positionDelta);
+        sf::Vector2f normal = positionDelta / distance;
 
-            float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
-            sf::Vector2f forceVector = force * Ball::MASS * normal;
+        float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
+        sf::Vector2f forceVector = force * Ball::MASS * normal;
 
-            col.ball->m_Velocity -= forceVector;
-            col.target->m_Velocity += forceVector;
-        }
+        col.ball->m_Velocity -= forceVector;
+        col.target->m_Velocity += forceVector;
     }
 }
 

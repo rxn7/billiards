@@ -12,12 +12,13 @@ public:
 public:
     void update(float dt);
     void render(sf::RenderTarget &renderTarget) const;
-    static void applyPhysics(std::vector<Ball> &balls);
+    static void applyPhysics(std::vector<Ball> &balls, const Table &table);
 
     inline bool isPointOverlapping(sf::Vector2f v) const { 
         sf::Vector2f d = m_Position - v;
         return (d.x*d.x + d.y*d.y) < Ball::RADIUS * Ball::RADIUS;
     }
+
     inline bool isStriped() const { return m_Number > 8; }
     inline uint8_t getNumber() const { return m_Number; }
 

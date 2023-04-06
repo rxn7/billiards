@@ -37,7 +37,7 @@ int main(int argc, const char **argv) {
 
         window->clear();
 
-        Ball::applyPhysics(balls);
+        Ball::applyPhysics(balls, table);
 
         table.render(*window);
 
