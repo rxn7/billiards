@@ -55,6 +55,8 @@ void Ball::update(float dt) {
     sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
     sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
     m_Velocity += dragForce * dt;
+
+    m_Rotation += sf::Vector3f(m_Velocity.x, m_Velocity.y, 0.0f) / RADIUS * dt;
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
@@ -108,6 +110,16 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
 
         std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
         if(tableOverlapResult.first) {
+            if(tableOverlapResult.second.x > 0)
+                ball.m_Position.x = -table.getSize().x * 0.5f + RADIUS;
+            else if(tableOverlapResult.second.x < 0)
+                ball.m_Position.x = table.getSize().x * 0.5f - RADIUS;
+
+            if(tableOverlapResult.second.y > 0)
+                ball.m_Position.y = -table.getSize().y * 0.5f + RADIUS;
+            else if(tableOverlapResult.second.y < 0)
+                ball.m_Position.y = table.getSize().y * 0.5f - RADIUS;
+
             if(std::fabs(tableOverlapResult.second.x) > 0.1f) 
                 ball.m_Velocity.x *= -1.0f;
             if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
