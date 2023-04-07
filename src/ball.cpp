@@ -32,15 +32,7 @@ static const sf::Color BALL_COLORS[] = {
     sf::Color(25, 25, 25),
 };
 
-static const sf::Vector2f UVS[] = {
-    {0.0f, 0.0f},
-    {0.0f, 1.0f},
-    {1.0f, 1.0f},
-    {1.0f, 0.0f},
-};
-
-
-Ball::Ball(uint8_t number) : m_Number(number), m_Color(getColor(number)) {
+Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     assert(number >= 0 && number <= 15);
 
     if(!initialized)
@@ -49,9 +41,9 @@ Ball::Ball(uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     calculateRotationMatrix();
 }
 
-void Ball::update(float dt) {
+void Ball::update(const float dt) {
     sf::Vector2f movement = m_Velocity * dt;
-    float speed = MathUtils::length(m_Velocity);
+    const float speed = MathUtils::length(m_Velocity);
 
     m_Position += movement;
     applyDrag(speed, dt);
@@ -70,34 +62,29 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
     transform.translate(m_Position);
     transform.scale(RADIUS * m_Scale, RADIUS * m_Scale);
 
-    sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &shader);
+    const sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &shader);
     renderTarget.draw(vertexArray, states);
 }
 
-void Ball::applyDrag(float speed, float dt) {
-    sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
-    sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+void Ball::applyDrag(const float speed, const float dt) {
+    const sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
+    const sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
     m_Velocity += dragForce * dt;
 }
 
-void Ball::applyRotation(float speed, const sf::Vector2f &movement, float dt) {
+void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float dt) {
     if(speed == 0.0f)
         return;
 
-    float distanceMoved = MathUtils::length(movement);
-    static const sf::Vector3f SURFACE_NORMAL(0,0,1);
-    sf::Vector3f rotationAxis = MathUtils::normalized(MathUtils::cross(SURFACE_NORMAL, sf::Vector3f(movement.x, movement.y, 0.0f)));
+    const float distanceMoved = MathUtils::length(movement);
+    const sf::Vector2f direction = MathUtils::normalized(m_Velocity);
+    const sf::Vector3f surfaceNormal = sf::Vector3f(0,0,1);
+    const sf::Vector3f rotationAxis = MathUtils::cross(surfaceNormal, sf::Vector3f(direction.x, direction.y, 0.0f));
 
     m_Rotation += rotationAxis * distanceMoved / RADIUS;
 }
 
 void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
-    auto overlapCheck = [](const Ball &a, const Ball &b) {
-        sf::Vector2f delta = a.m_Position - b.m_Position;
-        float distSqr = MathUtils::lengthSqr(delta);
-        return std::make_tuple(distSqr <= Ball::DIAMETER * Ball::DIAMETER, distSqr);
-    };
-
     std::vector<Collision> collisions;
 
     for(Ball &ball : balls)  {
@@ -106,17 +93,14 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
             if(ball.m_Number == target.m_Number)
                 continue;
 
-            bool isOverlapping;
-            float distanceSquared;
-            std::tie(isOverlapping, distanceSquared) = overlapCheck(ball, target);
-
-            if(!isOverlapping)
+            const float distanceSquared = MathUtils::lengthSqr(ball.m_Position - target.m_Position);
+            if(distanceSquared >= DIAMETER * DIAMETER)
                 continue;
 
-            float distance = std::sqrt(distanceSquared);
-            float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
+            const float distance = std::sqrt(distanceSquared);
+            const float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
 
-            sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
+            const sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
             ball.m_Position -= displace;
             target.m_Position += displace;
 
@@ -126,7 +110,7 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
             );
         }
 
-        std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
+        const std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
         if(tableOverlapResult.first) {
             if(tableOverlapResult.second.x > 0)
                 ball.m_Position.x = -table.getSize().x * 0.5f + RADIUS;
@@ -148,12 +132,12 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
     }
 
     for(const Collision &col : collisions) {
-        sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
-        sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
-        float distance = MathUtils::length(positionDelta);
-        sf::Vector2f normal = positionDelta / distance;
+        const sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
+        const sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
+        const float distance = MathUtils::length(positionDelta);
+        const sf::Vector2f normal = positionDelta / distance;
 
-        float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
+        const float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
         sf::Vector2f forceVector = force * Ball::MASS * normal;
 
         col.ball->m_Velocity -= forceVector;
@@ -164,31 +148,31 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
 }
 
 void Ball::calculateRotationMatrix() {
-    float cosX = std::cos(m_Rotation.x);
-    float sinX = std::sin(m_Rotation.x);
-    sf::Transform xRotationMatrix(
+    const float cosX = std::cos(m_Rotation.x);
+    const float sinX = std::sin(m_Rotation.x);
+    const sf::Transform xRotationMatrix(
         1.0f, 0.0f, 0.0f,
         0.0f, cosX, -sinX,
         0.0f, sinX, cosX
     );
  
-    float cosY = std::cos(m_Rotation.y);
-    float sinY = std::sin(m_Rotation.y);
-    sf::Transform yRotationMatrix(
+    const float cosY = std::cos(m_Rotation.y);
+    const float sinY = std::sin(m_Rotation.y);
+    const sf::Transform yRotationMatrix(
         cosY, 0.0f, sinY,
         0.0f, 1.0f, 0.0f,
         -sinY, 0.0f, cosY
     );
 
-    float cosZ = std::cos(m_Rotation.z);
-    float sinZ = std::sin(m_Rotation.z);
-    sf::Transform zRotationMatrix(
+    const float cosZ = std::cos(m_Rotation.z);
+    const float sinZ = std::sin(m_Rotation.z);
+    const sf::Transform zRotationMatrix(
         cosZ, -sinZ, 0.0f,
         sinZ, cosZ, 0.0f,
         0.0f, 0.0f, 1.0f
     );
 
-    m_RotationMatrixTransform = xRotationMatrix * yRotationMatrix * zRotationMatrix;
+    m_RotationMatrixTransform = zRotationMatrix * xRotationMatrix * yRotationMatrix;
 }
 
 const sf::Color &Ball::getColor(int number) {
@@ -203,10 +187,12 @@ void Ball::init() {
     assert(shader.loadFromFile("res/shaders/ball_frag.glsl", sf::Shader::Type::Fragment));
     assert(numbersTexture.loadFromFile("res/numbers.gif"));
 
+    const sf::Vector2f uvs[] = { {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
+
     sf::Vertex v;
     for(int i=0; i<4; ++i) {
-        v.texCoords = UVS[i],
-        v.position = UVS[i] * 2.0f - sf::Vector2f(1.0f, 1.0f);
+        v.texCoords = uvs[i],
+        v.position = uvs[i] * 2.0f - sf::Vector2f(1.0f, 1.0f);
         vertexArray.append(v);
     }
 }

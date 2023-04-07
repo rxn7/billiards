@@ -9,26 +9,26 @@
 
 class Ball {
 public:
-    Ball(uint8_t number);
+    Ball(const uint8_t number);
 
 public:
-    void update(float dt);
+    void update(const float dt);
     void render(sf::RenderTarget &renderTarget) const;
     static void applyPhysics(std::vector<Ball> &balls, const Table &table);
 
-    inline bool isPointOverlapping(sf::Vector2f v) const { 
+    inline bool isPointOverlapping(const sf::Vector2f &v) const { 
         sf::Vector2f d = m_Position - v;
         return (d.x*d.x + d.y*d.y) < Ball::RADIUS * Ball::RADIUS;
     }
 
-    static const sf::Color &getColor(int number);
+    static const sf::Color &getColor(const int number);
     inline bool isStriped() const { return m_Number > 8; }
     inline uint8_t getNumber() const { return m_Number; }
 
 private:
     static void init();
-    void applyDrag(float speed, float dt);
-    void applyRotation(float speed, const sf::Vector2f &movement, float dt);
+    void applyDrag(const float speed, const float dt);
+    void applyRotation(const float speed, const sf::Vector2f &movement, const float dt);
     void calculateRotationMatrix();
 
 public:

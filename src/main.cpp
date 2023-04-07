@@ -51,22 +51,22 @@ int main(int argc, const char **argv) {
     }
 }
 
-void cueHitCueBall(sf::Vector2f direction, float force) {
+void cueHitCueBall(const sf::Vector2f &direction, const float force) {
     // TODO: Play sound
     cueBall.m_Velocity = direction * std::clamp(force, 5.0f, 3000.0f);
 }
 
-void resize(unsigned int width, unsigned int height) {
+void resize(const unsigned int width, const unsigned int height) {
     static constexpr float baseRatio = BASE_WINDOW_WIDTH / BASE_WINDOW_HEIGHT;
-    float windowRatio = static_cast<float>(width) / static_cast<float>(height);
+    const float windowRatio = static_cast<float>(width) / static_cast<float>(height);
 
     if(width >= baseRatio * height) {
-        float size = static_cast<float>(height) * baseRatio;
-        float offset = (width - size) * 0.5f;
+        const float size = static_cast<float>(height) * baseRatio;
+        const float offset = (width - size) * 0.5f;
         view.setViewport({offset / width, 0.0f, size / static_cast<float>(width), 1.0f});
     } else {
-        float size = static_cast<float>(width) / baseRatio;
-        float offset = (height - size) * 0.5f;
+        const float size = static_cast<float>(width) / baseRatio;
+        const float offset = (height - size) * 0.5f;
         view.setViewport({0.0f, offset / height, 1.0f, size / static_cast<float>(height)});
     }
 
@@ -96,15 +96,14 @@ void init() {
 }
 
 void setupBalls() {
-    uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
-    sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.2, 0.0f);
+    constexpr uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
+    const sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.2, 0.0f);
 
-    static const float width = sqrt(3.0f) * Ball::RADIUS;
-    static const float height = Ball::DIAMETER;
-
-    for(Ball &ball : balls) {
+    for(Ball &ball : balls)
         ball.m_Velocity = {0,0};
-    }
+
+    static constexpr float width = std::sqrt(3.0f) * Ball::RADIUS;
+    static constexpr float height = Ball::DIAMETER;
 
     int idx = 0;
     for(int row=-2; row<=2; ++row) {
@@ -119,7 +118,7 @@ void setupBalls() {
     cueBall.m_Position = sf::Vector2f(-table.getSize().x * (1.0 - INIT_CUE_BALL_POSITION_NORMALIZED) * 0.5f, 0.0f);
 }
 
-void handleEvent(sf::Event &event) {
+void handleEvent(const sf::Event &event) {
     switch(event.type) {
         case sf::Event::Closed:
             window->close();
@@ -131,7 +130,7 @@ void handleEvent(sf::Event &event) {
         }
 
         case sf::Event::MouseButtonPressed: {
-            sf::Vector2f pos = window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+            const sf::Vector2f pos = window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
             if(cueBall.isPointOverlapping(pos)) {
                 isCueBallHeld = true;
                 cueBallHeldStartPosition = pos;
@@ -142,9 +141,9 @@ void handleEvent(sf::Event &event) {
         case sf::Event::MouseButtonReleased:
             if(isCueBallHeld) {
                 isCueBallHeld = false;
-                sf::Vector2f delta = cueBallHeldStartPosition - window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-                float force = MathUtils::length(delta);
-                sf::Vector2f direction = MathUtils::normalized(delta);
+                const sf::Vector2f delta = cueBallHeldStartPosition - window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+                const float force = MathUtils::length(delta);
+                const sf::Vector2f direction = MathUtils::normalized(delta);
                 cueHitCueBall(direction, force);
             }
             break;

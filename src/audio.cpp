@@ -19,7 +19,7 @@ void Audio::init() {
 }
 
 sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
-    auto it = buffers.find(type);
+    const auto it = buffers.find(type);
     assert(it != buffers.end());
     return (*it).second;
 }
