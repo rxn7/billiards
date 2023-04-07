@@ -3,6 +3,7 @@
 #include "table.h"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Glsl.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -20,13 +21,15 @@ public:
         return (d.x*d.x + d.y*d.y) < Ball::RADIUS * Ball::RADIUS;
     }
 
+    static const sf::Color &getColor(int number);
     inline bool isStriped() const { return m_Number > 8; }
     inline uint8_t getNumber() const { return m_Number; }
 
-    const sf::Color &getColor() const;
-
 private:
     static void init();
+    void applyDrag(float speed, float dt);
+    void applyRotation(float speed, const sf::Vector2f &movement, float dt);
+    void calculateRotationMatrix();
 
 public:
     static constexpr float RADIUS = 20.0f;
@@ -39,5 +42,7 @@ public:
     float m_Scale = 1.0f;
 
 private:
+    const sf::Color &m_Color;
+    sf::Transform m_RotationMatrixTransform;
     uint8_t m_Number = 8;
 };

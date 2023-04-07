@@ -7,30 +7,27 @@
 #include <SFML/System/Vector3.hpp>
 
 namespace MathUtils {
-    inline float vecLength(const sf::Vector2f &v) {
+    inline float length(const sf::Vector2f &v) {
         return std::sqrt(v.x*v.x + v.y*v.y);
     }
 
-    inline float vecLength(const sf::Vector3f &v) {
+    inline float length(const sf::Vector3f &v) {
         return std::sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
     }
 
-    inline float vecLengthSqr(const sf::Vector2f &v) {
+    inline float lengthSqr(const sf::Vector2f &v) {
         return v.x*v.x + v.y*v.y;
     }
 
-    inline sf::Vector2f clamp(const sf::Vector2f &val, const sf::Vector2f &min, const sf::Vector2f &max) {
-        return sf::Vector2f(std::clamp(val.x, min.x, max.x), std::clamp(val.y, min.y, max.y));
-    }
-
-    inline sf::Vector2f normalized(const sf::Vector2f &v) {
-        float len = vecLength(v);
+    template<typename T> 
+    T normalized(const T &v) {
+        float len = length(v);
         if(len == 0) return v;
         return v / len;
     }
 
     inline sf::Vector3f normalized(const sf::Vector3f &v) {
-        float len = vecLength(v);
+        float len = length(v);
         if(len == 0) return v;
         return v / len;
     }

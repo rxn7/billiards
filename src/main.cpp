@@ -143,7 +143,7 @@ void handleEvent(sf::Event &event) {
             if(isCueBallHeld) {
                 isCueBallHeld = false;
                 sf::Vector2f delta = cueBallHeldStartPosition - window->mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-                float force = MathUtils::vecLength(delta);
+                float force = MathUtils::length(delta);
                 sf::Vector2f direction = MathUtils::normalized(delta);
                 cueHitCueBall(direction, force);
             }

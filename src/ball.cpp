@@ -41,40 +41,30 @@ static const sf::Vector2f UVS[] = {
 };
 
 
-Ball::Ball(uint8_t number) : m_Number(number) {
+Ball::Ball(uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     assert(number >= 0 && number <= 15);
 
     if(!initialized)
         init();
+
+    calculateRotationMatrix();
 }
 
 void Ball::update(float dt) {
-    m_Position += m_Velocity * dt;
+    sf::Vector2f movement = m_Velocity * dt;
+    float speed = MathUtils::length(m_Velocity);
 
-    // Apply drag
-    float speed = MathUtils::vecLength(m_Velocity);
-    sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
-    sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
-    m_Velocity += dragForce * dt;
+    m_Position += movement;
+    applyDrag(speed, dt);
+    applyRotation(speed, movement, dt);
 
-    // Calculate the angular velocity
-    float direction = std::atan2(m_Velocity.y, m_Velocity.x);
-    sf::Vector3f angularVelocity(std::sin(direction), -std::cos(direction), 0.0f);
-    angularVelocity *= speed / RADIUS;
-
-    // Calculate the rotation direction
-    sf::Vector3f surfaceNormal(0.0f, 0.0f, 1.0f);
-    sf::Vector3f rotationDirection = MathUtils::cross(surfaceNormal, (sf::Vector3f(std::cos(direction), std::sin(direction), 0.0f)));
-    float rotationSign = (rotationDirection.z > 0.0f) ? -1.0f : 1.0f;
-
-    // Update the rotation
-    m_Rotation += angularVelocity * dt * rotationSign;
+    calculateRotationMatrix();
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
-    shader.setUniform("u_Color", sf::Glsl::Vec4(getColor()));
+    shader.setUniform("u_Color", sf::Glsl::Vec4(m_Color));
     shader.setUniform("u_Number", m_Number);
-    shader.setUniform("u_Rotation", m_Rotation);
+    shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(m_RotationMatrixTransform));
     shader.setUniform("u_NumbersTexture", numbersTexture);
 
     sf::Transform transform;
@@ -85,10 +75,27 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
     renderTarget.draw(vertexArray, states);
 }
 
+void Ball::applyDrag(float speed, float dt) {
+    sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
+    sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+    m_Velocity += dragForce * dt;
+}
+
+void Ball::applyRotation(float speed, const sf::Vector2f &movement, float dt) {
+    if(speed == 0.0f)
+        return;
+
+    float distanceMoved = MathUtils::length(movement);
+    static const sf::Vector3f SURFACE_NORMAL(0,0,1);
+    sf::Vector3f rotationAxis = MathUtils::normalized(MathUtils::cross(SURFACE_NORMAL, sf::Vector3f(movement.x, movement.y, 0.0f)));
+
+    m_Rotation += rotationAxis * distanceMoved / RADIUS;
+}
+
 void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
     auto overlapCheck = [](const Ball &a, const Ball &b) {
         sf::Vector2f delta = a.m_Position - b.m_Position;
-        float distSqr = MathUtils::vecLengthSqr(delta);
+        float distSqr = MathUtils::lengthSqr(delta);
         return std::make_tuple(distSqr <= Ball::DIAMETER * Ball::DIAMETER, distSqr);
     };
 
@@ -144,7 +151,7 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
     for(const Collision &col : collisions) {
         sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
         sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
-        float distance = MathUtils::vecLength(positionDelta);
+        float distance = MathUtils::length(positionDelta);
         sf::Vector2f normal = positionDelta / distance;
 
         float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
@@ -157,14 +164,39 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
     }
 }
 
-const sf::Color &Ball::getColor() const {
-    if(m_Number == 0)
-        return BALL_COLORS[0];
+void Ball::calculateRotationMatrix() {
+    float cosX = std::cos(m_Rotation.x);
+    float sinX = std::sin(m_Rotation.x);
+    sf::Transform xRotationMatrix(
+        1.0f, 0.0f, 0.0f,
+        0.0f, cosX, -sinX,
+        0.0f, sinX, cosX
+    );
+ 
+    float cosY = std::cos(m_Rotation.y);
+    float sinY = std::sin(m_Rotation.y);
+    sf::Transform yRotationMatrix(
+        cosY, 0.0f, sinY,
+        0.0f, 1.0f, 0.0f,
+        -sinY, 0.0f, cosY
+    );
 
-    if(m_Number == 8)
-        return BALL_COLORS[8];
+    float cosZ = std::cos(m_Rotation.z);
+    float sinZ = std::sin(m_Rotation.z);
+    sf::Transform zRotationMatrix(
+        cosZ, -sinZ, 0.0f,
+        sinZ, cosZ, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
 
-    return BALL_COLORS[(m_Number) % 8];
+    m_RotationMatrixTransform = xRotationMatrix * yRotationMatrix * zRotationMatrix;
+}
+
+const sf::Color &Ball::getColor(int number) {
+    if(number == 0 || number == 8)
+        return BALL_COLORS[number];
+
+    return BALL_COLORS[(number) % 8];
 } 
 
 void Ball::init() {
