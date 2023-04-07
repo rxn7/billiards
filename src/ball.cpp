@@ -1,5 +1,4 @@
 #include "ball.h"
-
 #include "audio.h"
 #include "mathUtils.h"
 #include <SFML/Graphics/BlendMode.hpp>
