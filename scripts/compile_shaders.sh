@@ -16,10 +16,15 @@ do
 
 		while read -r line
 		do
-			if [ -n "$line" ]
-			then
-				echo "\"$line\n\"" >> $OUTFILE
+			if [[ ! -n "$line" ]]; then
+				continue
 			fi
+
+			if [[ "$line" =~ (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*) ]] ; then
+				continue
+			fi
+
+			echo "\"$line\n\"" >> $OUTFILE
 		done < "$f"
 	fi
 done
