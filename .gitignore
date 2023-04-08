@@ -1,4 +1,5 @@
 .cache
 bin
 obj
+shaders_out
 compile_commands.json

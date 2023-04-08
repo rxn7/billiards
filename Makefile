@@ -4,25 +4,42 @@ SRC_DIR := src
 BIN_DIR := bin
 OUT := $(BIN_DIR)/billard
 LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
-INCFLAGS := -Isrc
+INCFLAGS := -Isrc -Ishaders_out
 CFLAGS := -std=c++20
 SRC := $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-all: create_dirs $(OBJ) $(OUT) copy_res
+all: validate_shaders compile_shaders create_dirs copy_res compile delete_shaders_out
+
+compile: $(OBJ) $(OUT)
 
 $(OBJ_DIR)/%.o: %.cpp
+	@echo "Building $@"
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
 	@mkdir -p $(@D)
-	$(CC) $(OBJ) $(LDFLAGS) -o $@
+	@$(CC) $(OBJ) $(LDFLAGS) -o $@
 
 create_dirs:
+	@echo "Creating directories..."
 	@mkdir -p $(OBJ_DIR) $(BIN_DIR)
 
+validate_shaders:
+	@echo "Validating shaders..."
+	@glslangValidator shaders/*
+
+compile_shaders:
+	@echo "Compiling shaders..."
+	@./scripts/compile_shaders.sh
+
+delete_shaders_out:
+	@echo "Deleting compiled shaders..."
+	@rm -rf shaders_out
+
 copy_res:
+	@echo "Copying resource files..."
 	@cp -r res bin/
 
 clean:

@@ -184,7 +184,12 @@ const sf::Color &Ball::getColor(int number) {
 
 void Ball::init() {
     initialized = true;
-    assert(shader.loadFromFile("res/shaders/ball_frag.glsl", sf::Shader::Type::Fragment));
+
+    const char *fragShader = {
+        #include "../shaders_out/ball.frag.glsl"
+    };
+
+    assert(shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
     assert(numbersTexture.loadFromFile("res/numbers.gif"));
 
     const sf::Vector2f uvs[] = { {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
