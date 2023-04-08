@@ -88,7 +88,7 @@ void init() {
 
     setupBalls();
 
-    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billard by rxn7", sf::Style::Default);
+    window = std::make_unique<sf::RenderWindow>(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billiard by rxn7", sf::Style::Default);
     window->setVerticalSyncEnabled(true);
 
     view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);

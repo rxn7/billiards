@@ -2,7 +2,7 @@ CC := g++
 OBJ_DIR := obj
 SRC_DIR := src
 BIN_DIR := bin
-OUT := $(BIN_DIR)/billard
+OUT := $(BIN_DIR)/billiard
 LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 INCFLAGS := -Isrc -Ishaders_out
 CFLAGS := -std=c++20
