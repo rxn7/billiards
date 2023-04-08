@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "audio.h"
+#include "random.h"
 #include "main.h"
 #include "ball.h"
 #include "mathUtils.h"
@@ -83,6 +84,7 @@ void init() {
     }
 
     Audio::init();
+    Random::init();
 
     for(int i=0; i<=15; ++i) balls.emplace_back(i);
 

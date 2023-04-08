@@ -14,4 +14,5 @@ namespace Audio {
 
     void init();
     sf::SoundBuffer &getSoundBuffer(AudioType type);
+    void play(sf::Sound &sound, AudioType type, float volume=100.0f, float pitch=1.0f);
 }

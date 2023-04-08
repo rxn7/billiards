@@ -22,3 +22,10 @@ sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
     assert(it != buffers.end());
     return (*it).second;
 }
+
+void Audio::play(sf::Sound &sound, AudioType type, float volume, float pitch) {
+    sound.setBuffer(getSoundBuffer(type));
+    sound.setVolume(volume);
+    sound.setPitch(pitch);
+    sound.play();
+}

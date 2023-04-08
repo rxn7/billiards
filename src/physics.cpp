@@ -2,6 +2,7 @@
 #include "collision.h"
 #include "mathUtils.h"
 #include "audio.h"
+#include "random.h"
 
 void Physics::update(std::vector<Ball> &balls, const Table &table) {
     std::vector<Collision> collisions;
@@ -46,10 +47,8 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
             if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
                 ball.m_Velocity.y *= -1.0f;
 
-            const float volume = std::clamp(MathUtils::length(ball.m_Velocity) / 10.0f, 10.0f, 100.0f);
-            ball.m_Sound.setVolume(volume);
-            ball.m_Sound.setBuffer(Audio::getSoundBuffer(Audio::AudioType::BALL_WITH_TABLE_COLLISION));
-            ball.m_Sound.play();
+            const float volume = std::clamp(MathUtils::length(ball.m_Velocity) / 10.0f, 1.0f, 100.0f);
+            Audio::play(ball.m_Sound, Audio::AudioType::BALL_WITH_TABLE_COLLISION, volume, Random::rangeF(0.9f, 1.1f));
         }
     }
 
@@ -65,9 +64,7 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
         col.ball->m_Velocity -= forceVector;
         col.target->m_Velocity += forceVector;
 
-        const float volume = std::clamp(std::fabs(force) / 100.0f, 10.0f, 100.0f);
-        col.ball->m_Sound.setVolume(volume);
-        col.ball->m_Sound.setBuffer(Audio::getSoundBuffer(Audio::AudioType::BALL_WITH_BALL_COLLISION));
-        col.ball->m_Sound.play();
+        const float volume = std::clamp(std::fabs(force) / 100.0f, 1.0f, 100.0f);
+        Audio::play(col.ball->m_Sound, Audio::AudioType::BALL_WITH_BALL_COLLISION, volume, Random::rangeF(0.9f, 1.1f));
     }
 }
