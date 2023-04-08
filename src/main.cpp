@@ -13,6 +13,7 @@
 #include "ball.h"
 #include "mathUtils.h"
 #include "table.h"
+#include "physics.h"
 
 #define cueBall balls[0]
 
@@ -38,7 +39,7 @@ int main(int argc, const char **argv) {
 
         window->clear();
 
-        Ball::applyPhysics(balls, table);
+        Physics::update(balls, table);
 
         table.render(*window);
 
@@ -102,15 +103,15 @@ void setupBalls() {
     for(Ball &ball : balls)
         ball.m_Velocity = {0,0};
 
-    static constexpr float width = std::sqrt(3.0f) * Ball::RADIUS;
-    static constexpr float height = Ball::DIAMETER;
+    static constexpr float width = std::sqrt(3.0f) * Ball::RADIUS + Physics::COLLISION_MARGIN;
+    static constexpr float height = Ball::DIAMETER + Physics::COLLISION_MARGIN;
 
     int idx = 0;
     for(int row=-2; row<=2; ++row) {
         for(int col=row; col<=2; ++col) {
             balls[numbers[idx++]].m_Position = position + sf::Vector2f(
                 col * width,
-                row * height - col * Ball::RADIUS + Ball::DIAMETER
+                row * height - col * Ball::RADIUS + Ball::DIAMETER 
             );
         }
     }
