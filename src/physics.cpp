@@ -45,6 +45,11 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
                 ball.m_Velocity.x *= -1.0f;
             if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
                 ball.m_Velocity.y *= -1.0f;
+
+            const float volume = std::clamp(MathUtils::length(ball.m_Velocity) / 10.0f, 10.0f, 100.0f);
+            ball.m_Sound.setVolume(volume);
+            ball.m_Sound.setBuffer(Audio::getSoundBuffer(Audio::AudioType::BALL_WITH_TABLE_COLLISION));
+            ball.m_Sound.play();
         }
     }
 
@@ -60,8 +65,7 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
         col.ball->m_Velocity -= forceVector;
         col.target->m_Velocity += forceVector;
 
-        const float volume = std::clamp(std::fabs(force) / 50.0f, 10.0f, 100.0f);
-        
+        const float volume = std::clamp(std::fabs(force) / 100.0f, 10.0f, 100.0f);
         col.ball->m_Sound.setVolume(volume);
         col.ball->m_Sound.setBuffer(Audio::getSoundBuffer(Audio::AudioType::BALL_WITH_BALL_COLLISION));
         col.ball->m_Sound.play();
