@@ -186,7 +186,7 @@ void Ball::init() {
     initialized = true;
 
     const char *fragShader = {
-        #include "../shaders_out/ball.frag.glsl"
+        #include "../shaders_out/ball.frag.glsl" // NOLINT(cert-err-58-cpp)
     };
 
     assert(shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
