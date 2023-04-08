@@ -6,6 +6,7 @@
 #include <SFML/Graphics/Glsl.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 class Ball {
 public:
@@ -29,7 +30,6 @@ private:
     static void init();
     void applyDrag(const float speed, const float dt);
     void applyRotation(const float speed, const sf::Vector2f &movement, const float dt);
-    void calculateRotationMatrix();
 
 public:
     static constexpr float RADIUS = 20.0f;
@@ -38,11 +38,10 @@ public:
     static constexpr float MASS = 0.160f;
     sf::Vector2f m_Velocity = {0,0};
     sf::Vector2f m_Position = {0,0};
-    sf::Vector3f m_Rotation = {0,0,0};
     float m_Scale = 1.0f;
 
 private:
+    glm::quat m_Rotation;
     const sf::Color &m_Color;
-    sf::Transform m_RotationMatrixTransform;
     uint8_t m_Number = 8;
 };

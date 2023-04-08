@@ -82,7 +82,7 @@ void main() {
   float brightness = brightness(light, normal);
   float spec = specular(light, normal);
 
-  vec3 diffuse = getColorAtPoint(u_RotationMatrix * normal) * brightness;
+  vec3 diffuse = getColorAtPoint(normal * u_RotationMatrix) * brightness;
 
   gl_FragColor = vec4(diffuse + spec, alpha);
 }

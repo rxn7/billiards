@@ -5,6 +5,7 @@
 #include <cmath>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
+#include <SFML/Graphics/Transform.hpp>
 
 namespace MathUtils {
     inline float lengthSqr(const sf::Vector2f &v) {
@@ -34,4 +35,6 @@ namespace MathUtils {
             a.x * b.y - a.y * b.x
         );
     }
+
+    sf::Transform rotationMatrix(const sf::Vector3f &axis, float angle);
 }

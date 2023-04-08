@@ -13,6 +13,9 @@
 #include <SFML/Window/Mouse.hpp>
 #include <cassert>
 #include <cmath>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "collision.h"
 
 static sf::Shader shader;
@@ -38,7 +41,7 @@ Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     if(!initialized)
         init();
 
-    calculateRotationMatrix();
+    m_Rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void Ball::update(const float dt) {
@@ -48,14 +51,12 @@ void Ball::update(const float dt) {
     m_Position += movement;
     applyDrag(speed, dt);
     applyRotation(speed, movement, dt);
-
-    calculateRotationMatrix();
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
     shader.setUniform("u_Color", sf::Glsl::Vec4(m_Color));
     shader.setUniform("u_Number", m_Number);
-    shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(m_RotationMatrixTransform));
+    shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
     shader.setUniform("u_NumbersTexture", numbersTexture);
 
     sf::Transform transform;
@@ -76,12 +77,10 @@ void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float 
     if(speed == 0.0f)
         return;
 
-    const float distanceMoved = MathUtils::length(movement);
-    const sf::Vector2f direction = MathUtils::normalized(m_Velocity);
-    const sf::Vector3f surfaceNormal = sf::Vector3f(0,0,1);
-    const sf::Vector3f rotationAxis = MathUtils::cross(surfaceNormal, sf::Vector3f(direction.x, direction.y, 0.0f));
+    glm::quat rotationX = glm::angleAxis(-movement.y / RADIUS, glm::vec3(1.0f, 0.0f, 0.0f));
+    glm::quat rotationY = glm::angleAxis(movement.x / RADIUS, glm::vec3(0.0f, 1.0f, 0.0f));
 
-    m_Rotation += rotationAxis * distanceMoved / RADIUS;
+    m_Rotation = rotationX * rotationY * m_Rotation;
 }
 
 void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
@@ -145,34 +144,6 @@ void Ball::applyPhysics(std::vector<Ball> &balls, const Table &table) {
         
         Audio::play(Audio::AudioType::BALL_WITH_BALL_COLLISION);
     }
-}
-
-void Ball::calculateRotationMatrix() {
-    const float cosX = std::cos(m_Rotation.x);
-    const float sinX = std::sin(m_Rotation.x);
-    const sf::Transform xRotationMatrix(
-        1.0f, 0.0f, 0.0f,
-        0.0f, cosX, -sinX,
-        0.0f, sinX, cosX
-    );
- 
-    const float cosY = std::cos(m_Rotation.y);
-    const float sinY = std::sin(m_Rotation.y);
-    const sf::Transform yRotationMatrix(
-        cosY, 0.0f, sinY,
-        0.0f, 1.0f, 0.0f,
-        -sinY, 0.0f, cosY
-    );
-
-    const float cosZ = std::cos(m_Rotation.z);
-    const float sinZ = std::sin(m_Rotation.z);
-    const sf::Transform zRotationMatrix(
-        cosZ, -sinZ, 0.0f,
-        sinZ, cosZ, 0.0f,
-        0.0f, 0.0f, 1.0f
-    );
-
-    m_RotationMatrixTransform = zRotationMatrix * xRotationMatrix * yRotationMatrix;
 }
 
 const sf::Color &Ball::getColor(int number) {
