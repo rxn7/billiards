@@ -14,6 +14,7 @@
 #include "ball.h"
 #include "mathUtils.h"
 #include "table.h"
+#include "cue.h"
 #include "physics.h"
 
 #define cueBall balls[0]
@@ -22,10 +23,8 @@ static constexpr float INIT_CUE_BALL_POSITION_NORMALIZED = 0.2f;
 static sf::RenderWindow window;
 static std::vector<Ball> balls;
 static Table table;
+static std::unique_ptr<Cue> cue;
 static sf::View view;
-
-static bool isCueBallHeld = false;
-static sf::Vector2f cueBallHeldStartPosition;
 
 int main(int argc, const char **argv) {
     init();
@@ -49,13 +48,11 @@ int main(int argc, const char **argv) {
             ball.render(window);
         }
 
+        cue->update(dt);
+        cue->render(window);
+
         window.display();
     }
-}
-
-void cueHitCueBall(const sf::Vector2f &direction, const float force) {
-    // TODO: Play sound
-    cueBall.m_Velocity = direction * std::clamp(force, 5.0f, 3000.0f);
 }
 
 void resize(const unsigned int width, const unsigned int height) {
@@ -92,6 +89,8 @@ void init() {
 
     window.create(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billiard by rxn7", sf::Style::Default);
     window.setVerticalSyncEnabled(true);
+
+    cue = std::make_unique<Cue>(window, cueBall);
 
     view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
     view.setCenter(0.0f, 0.0f);
@@ -133,22 +132,13 @@ void handleEvent(const sf::Event &event) {
         }
 
         case sf::Event::MouseButtonPressed: {
-            const sf::Vector2f pos = window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-            if(cueBall.isPointOverlapping(pos)) {
-                isCueBallHeld = true;
-                cueBallHeldStartPosition = pos;
-            }
+            cue->m_Visible = true;
             break;
         }
 
         case sf::Event::MouseButtonReleased:
-            if(isCueBallHeld) {
-                isCueBallHeld = false;
-                const sf::Vector2f delta = cueBallHeldStartPosition - window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-                const float force = MathUtils::length(delta);
-                const sf::Vector2f direction = MathUtils::normalized(delta);
-                cueHitCueBall(direction, force);
-            }
+            if(cue->m_Visible)
+                cue->hit();
             break;
 
         case sf::Event::KeyPressed:
