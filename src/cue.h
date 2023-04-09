@@ -10,6 +10,7 @@ public:
     Cue(const sf::RenderWindow &window, Ball &cueBall);
     void render(sf::RenderTarget &renderTarget) const;
     void update(float dt);
+    void hitAnimationStep(float dt);
     void triggerHitAnimation();
 
 public:
