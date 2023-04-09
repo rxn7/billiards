@@ -10,15 +10,17 @@ public:
     Cue(const sf::RenderWindow &window, Ball &cueBall);
     void render(sf::RenderTarget &renderTarget) const;
     void update(float dt);
-    void hit();
+    void triggerHitAnimation();
 
 public:
     bool m_Visible = false;
 
 private:
+    static constexpr float HIT_ANIMATION_SPEED = 2000.0f;
     const sf::RenderWindow &m_Window;
     Ball &m_CueBall;
     float m_Force;
+    bool m_HitAnimation = false;
     sf::Vector2f m_Direction;
     sf::Sprite m_Sprite;
     sf::Texture m_Texture;
