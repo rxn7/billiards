@@ -9,7 +9,7 @@ CFLAGS := -std=c++20
 SRC := $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-all: validate_shaders compile_shaders create_dirs copy_res compile
+all: validate_shaders compile_shaders create_dirs copy_assets compile
 
 compile: $(OBJ) $(OUT)
 
@@ -34,9 +34,9 @@ compile_shaders:
 	@echo "Compiling shaders..."
 	@./scripts/compile_shaders.sh
 
-copy_res:
-	@echo "Copying resource files..."
-	@cp -r res bin/
+copy_assets:
+	@echo "Copying assets..."
+	@cp -r assets bin/
 
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR) shaders_out

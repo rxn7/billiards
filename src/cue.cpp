@@ -3,7 +3,7 @@
 #include "mathUtils.h"
 
 Cue::Cue(const sf::RenderWindow &window, Ball &cueBall) : m_Window(window), m_CueBall(cueBall) {
-    m_Texture.loadFromFile("res/textures/cue.png");
+    m_Texture.loadFromFile("assets/textures/cue.png");
     m_Sprite.setTexture(m_Texture, true);
     m_Sprite.setScale(8,5);
     m_Sprite.setOrigin(sf::Vector2f(m_Texture.getSize()));

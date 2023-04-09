@@ -4,6 +4,10 @@
 #include <unordered_map>
 #include <cassert>
 
+static constexpr char BALL_WITH_BALL_COLLISION_SOUND_PATH[] = "assets/audio/ball_collision.wav";
+static constexpr char BALL_WITH_TABLE_COLLISION_SOUND_PATH[] = "assets/audio/table_collision.wav";
+static constexpr char CUE_HIT_SOUND_PATH[] = "assets/audio/cue_hit.wav";
+
 static std::unordered_map<Audio::AudioType, sf::SoundBuffer> buffers;
 
 static void addBuffer(Audio::AudioType type, const std::string &path) {
@@ -19,9 +23,9 @@ void Audio::init() {
 }
 
 sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
-    const auto it = buffers.find(type);
+    const auto &it = buffers.find(type);
     assert(it != buffers.end());
-    return (*it).second;
+    return it->second;
 }
 
 void Audio::play(sf::Sound &sound, AudioType type, float volume, float pitch) {

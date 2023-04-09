@@ -4,7 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 Table::Table(const sf::Vector2f &size, const sf::Color &color) : m_Size(size), m_Color(color) {
-    assert(m_Texture.loadFromFile("res/textures/table.png"));
+    assert(m_Texture.loadFromFile("assets/textures/table.png"));
 
     const sf::Vector2f textureSize(m_Texture.getSize());
     float scale = size.x / textureSize.x;
