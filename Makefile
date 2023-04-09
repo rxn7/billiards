@@ -3,9 +3,9 @@ OBJ_DIR := obj
 SRC_DIR := src
 BIN_DIR := bin
 OUT := $(BIN_DIR)/billard
-LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+LDFLAGS := $(shell pkgconf sdl2 --libs --static)
 INCFLAGS := -Isrc -Ishaders_out
-CFLAGS := -std=c++20
+CFLAGS := -std=c++20 $(shell pkgconf sdl2 --cflags)
 SRC := $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
 OBJ := $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 

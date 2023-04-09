@@ -1,24 +1,22 @@
 #include "audio.h"
-#include <SFML/Audio/Sound.hpp>
-#include <SFML/Audio/SoundBuffer.hpp>
+#include "SDL_mixer.h"
+#include <string>
 #include <unordered_map>
 #include <cassert>
 
-static std::unordered_map<Audio::AudioType, sf::SoundBuffer> buffers;
+static std::unordered_map<Audio::AudioType, Mix_Chunk*> chunks;
 
-static void addBuffer(Audio::AudioType type, const std::string &path) {
-    sf::SoundBuffer buff;
-    assert(buff.loadFromFile(path));
-    buffers.emplace(type, buff);
+static void addChunk(Audio::AudioType type, const std::string &path) {
+    chunks.emplace(type, Mix_LoadWAV(path.c_str()));
 }
 
 void Audio::init() {
-    addBuffer(AudioType::BALL_WITH_BALL_COLLISION, BALL_WITH_BALL_COLLISION_SOUND_PATH);
-    addBuffer(AudioType::BALL_WITH_TABLE_COLLISION, BALL_WITH_TABLE_COLLISION_SOUND_PATH);
+    addChunk(AudioType::BALL_WITH_BALL_COLLISION, BALL_WITH_BALL_COLLISION_SOUND_PATH);
+    addChunk(AudioType::BALL_WITH_TABLE_COLLISION, BALL_WITH_TABLE_COLLISION_SOUND_PATH);
 }
 
-sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
-    const auto it = buffers.find(type);
-    assert(it != buffers.end());
+Mix_Chunk *Audio::getChunk(Audio::AudioType type) {
+    const auto it = chunks.find(type);
+    assert(it != chunks.end());
     return (*it).second;
 }

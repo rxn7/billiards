@@ -2,6 +2,7 @@
 #include "collision.h"
 #include "mathUtils.h"
 #include "audio.h"
+#include <glm/vec2.hpp>
 
 void Physics::update(std::vector<Ball> &balls, const Table &table) {
     std::vector<Collision> collisions;
@@ -49,7 +50,7 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
     }
 
     for(const Collision &col : collisions) {
-        const sf::Vector2f positionDelta = col.ball->m_Position - col.target->m_Position;
+        const glm::vec2 positionDelta = col.ball->m_Position - col.target->m_Position;
         const sf::Vector2f velocityDelta = col.ball->m_Velocity - col.target->m_Velocity;
         const float distance = MathUtils::length(positionDelta);
         const sf::Vector2f normal = positionDelta / distance;
