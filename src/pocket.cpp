@@ -15,10 +15,10 @@ void Pocket::init(const Table &table) {
     const float hh = tableSize.y * 0.5f - OFFSET - RADIUS;
 
     pockets = {
-        sf::Vector2f(-hw, hh), // Top left
-        sf::Vector2f(hw, hh), // Top right
-        sf::Vector2f(-hw, -hh), // Bottom left
-        sf::Vector2f(hw, -hh), // Bottom right
+        sf::Vector2f(-hw + OFFSET, hh - OFFSET), // Top left
+        sf::Vector2f(hw - OFFSET, hh - OFFSET), // Top right
+        sf::Vector2f(-hw + OFFSET, -hh + OFFSET), // Bottom left
+        sf::Vector2f(hw - OFFSET, -hh + OFFSET), // Bottom right
         sf::Vector2f(0, hh), // Middle top
         sf::Vector2f(0, -hh) // Middle bottom
     };
@@ -31,10 +31,9 @@ void Pocket::init(const Table &table) {
 bool Pocket::isBallInsideAny(const Ball &ball) {
     for(const sf::Vector2f &pocket : pockets) {
         const float distanceSqr = MathUtils::lengthSqr(ball.m_Position - pocket);
-        const float radiusTotal = RADIUS + Ball::RADIUS;
-        if(distanceSqr <= radiusTotal * radiusTotal) {
+        const float radiusTotal = RADIUS;
+        if(distanceSqr <= radiusTotal * radiusTotal)
             return true;
-        }
     }
 
     return false;

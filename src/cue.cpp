@@ -13,13 +13,16 @@ Cue::Cue(const sf::RenderWindow &window, Ball &cueBall) : m_Window(window), m_Cu
 }
 
 void Cue::update(float dt) {
+    if(m_CueBall.m_InPocket)
+        m_Visible = false;
+
+    if(!m_Visible)
+        return;
+
     if(m_HitAnimation) {
         hitAnimationStep(dt);
         return;
     }
-
-    if(!m_Visible)
-        return;
 
     const sf::Vector2f mousePositionWorld = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window));
     const sf::Vector2f delta = m_CueBall.m_Position - mousePositionWorld;

@@ -3,6 +3,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+#include <SFML/System/Time.hpp>
 #include <imgui-SFML.h>
 #include <imgui.h>
 #include <iostream>
@@ -28,6 +29,7 @@ static std::vector<Ball> balls;
 static Table table;
 static std::unique_ptr<Cue> cue;
 static sf::View view;
+static bool renderPockets;
 
 int main(int argc, const char **argv) {
     init();
@@ -45,7 +47,10 @@ int main(int argc, const char **argv) {
         update(dt);
 
         window.clear();
+
+        imgui(dt);
         render();
+
         window.display();
     }
 
@@ -85,6 +90,7 @@ void shutdown() {
 }
 
 void update(float dt) {
+    ImGui::SFML::Update(window, sf::seconds(dt));
     Physics::update(balls, table);
 
     for(Ball &ball : balls)
@@ -94,13 +100,24 @@ void update(float dt) {
 }
 
 void render() {
+    window.setView(view);
     table.render(window);
-    Pocket::renderDebug(window);
+
+    if(renderPockets)
+        Pocket::renderDebug(window);
 
     for(Ball &ball : balls)
         ball.render(window);
 
     cue->render(window);
+    
+    ImGui::SFML::Render(window);
+}
+
+void imgui(float dt) {
+    ImGui::Begin("Debug");
+    ImGui::Checkbox("Render pockets", &renderPockets);
+    ImGui::End();
 }
 
 void rackBalls() {

@@ -11,6 +11,7 @@ void init();
 void shutdown();
 void update(float dt);
 void render();
+void imgui(float dt);
 void rackBalls();
 void resize(const unsigned int width, const unsigned int height);
 void handleEvent(const sf::Event &event);
