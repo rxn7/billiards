@@ -13,5 +13,7 @@ namespace Audio {
     };
 
     void init();
+    void cleanup();
     Mix_Chunk *getChunk(AudioType type);
+    void play(AudioType type, float volume=100.0f);
 }

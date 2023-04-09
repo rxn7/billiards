@@ -1,31 +1,29 @@
 #pragma once
 
+#include "SDL_render.h"
 #include "main.h"
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/Color.hpp>
 
 namespace TableColors {
-    const sf::Color TOURNAMENT_BLUE = {0, 98, 162};
+    const SDL_Color TOURNAMENT_BLUE = {0, 98, 162};
 }
 
 struct Ball;
 
 class Table {
 public:
-    Table(sf::Vector2f size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, sf::Color color = TableColors::TOURNAMENT_BLUE);
-    void render(sf::RenderTarget &renderTarget) const;
-    std::pair<bool, sf::Vector2f> isBallOverlapping(const Ball &ball) const;
-    inline const sf::Vector2f &getSize() const { return m_Size; }
+    Table(const glm::vec2 &size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, const SDL_Color &color = TableColors::TOURNAMENT_BLUE);
+
+    void render(SDL_Renderer *renderer, const glm::vec2 &camera) const;
+    std::pair<bool, glm::vec2> isBallOverlapping(const Ball &ball) const;
+
+    inline const glm::vec2 &getSize() const { return m_Size; }
 
 public:
     static constexpr float DEFAULT_WIDTH = BASE_WINDOW_WIDTH * 0.75f;
     static constexpr float DEFAULT_HEIGHT = DEFAULT_WIDTH * 0.5f;
 
 private:
-    sf::Vector2f m_Size;
-    sf::Color m_Color;
-    sf::RectangleShape m_Shape;
+    glm::vec2 m_Size;
+    SDL_Color m_Color;
+    SDL_FRect m_Rect;
 };

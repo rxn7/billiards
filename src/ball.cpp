@@ -1,16 +1,5 @@
 #include "ball.h"
 #include "audio.h"
-#include "mathUtils.h"
-#include <SFML/Graphics/BlendMode.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Vertex.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/Glsl.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/Mouse.hpp>
 #include <cassert>
 #include <cmath>
 #include <glm/ext/vector_float2.hpp>
@@ -47,7 +36,7 @@ Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
 
 void Ball::update(const float dt) {
     const glm::vec2 movement = m_Velocity * dt;
-    const float speed = MathUtils::length(m_Velocity);
+    const float speed = m_Velocity.length();
 
     m_Position += movement;
     applyDrag(speed, dt);
@@ -69,7 +58,7 @@ void Ball::render() const {
 }
 
 void Ball::applyDrag(const float speed, const float dt) {
-    const glm::vec2 dragDirection = -MathUtils::normalized(m_Velocity);
+    const glm::vec2 dragDirection = glm::normalize(-m_Velocity);
     const glm::vec2 dragForce = dragDirection * DRAG_COEFFICIENT * speed;
 
     m_Velocity += dragForce * dt;

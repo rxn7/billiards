@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 pushd bin > /dev/null 2>&1
-./billard
+./billiard
 popd > /dev/null 2>&1

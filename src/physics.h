@@ -2,6 +2,7 @@
 
 #include "ball.h"
 #include "table.h"
+#include <vector>
 
 namespace Physics {
     constexpr float COLLISION_MARGIN = 0.0001f;

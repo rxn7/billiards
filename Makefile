@@ -2,8 +2,8 @@ CC := g++
 OBJ_DIR := obj
 SRC_DIR := src
 BIN_DIR := bin
-OUT := $(BIN_DIR)/billard
-LDFLAGS := $(shell pkgconf sdl2 --libs --static)
+OUT := $(BIN_DIR)/billiard
+LDFLAGS := $(shell pkgconf sdl2 --libs --static) -lSDL2_mixer
 INCFLAGS := -Isrc -Ishaders_out
 CFLAGS := -std=c++20 $(shell pkgconf sdl2 --cflags)
 SRC := $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
