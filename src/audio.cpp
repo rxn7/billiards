@@ -4,10 +4,6 @@
 #include <unordered_map>
 #include <cassert>
 
-static constexpr char BALL_WITH_BALL_COLLISION_SOUND_PATH[] = "assets/audio/ball_collision.wav";
-static constexpr char BALL_WITH_TABLE_COLLISION_SOUND_PATH[] = "assets/audio/table_collision.wav";
-static constexpr char CUE_HIT_SOUND_PATH[] = "assets/audio/cue_hit.wav";
-
 static std::unordered_map<Audio::AudioType, sf::SoundBuffer> buffers;
 
 static void addBuffer(Audio::AudioType type, const std::string &path) {
@@ -17,9 +13,10 @@ static void addBuffer(Audio::AudioType type, const std::string &path) {
 }
 
 void Audio::init() {
-    addBuffer(AudioType::BALL_WITH_BALL_COLLISION, BALL_WITH_BALL_COLLISION_SOUND_PATH);
-    addBuffer(AudioType::BALL_WITH_TABLE_COLLISION, BALL_WITH_TABLE_COLLISION_SOUND_PATH);
-    addBuffer(AudioType::CUE_HIT, CUE_HIT_SOUND_PATH);
+    addBuffer(AudioType::BALL_WITH_BALL_COLLISION, "assets/audio/ball_collision.wav");
+    addBuffer(AudioType::BALL_WITH_TABLE_COLLISION, "assets/audio/table_collision.wav");
+    addBuffer(AudioType::CUE_HIT, "assets/audio/cue_hit.wav");
+    addBuffer(AudioType::POCKET, "assets/audio/pocket.wav");
 }
 
 sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {

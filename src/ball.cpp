@@ -45,6 +45,9 @@ Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
 }
 
 void Ball::update(const float dt) {
+    if(m_InPocket)
+        return;
+
     sf::Vector2f movement = m_Velocity * dt;
     const float speed = MathUtils::length(m_Velocity);
 
@@ -54,6 +57,9 @@ void Ball::update(const float dt) {
 }
 
 void Ball::render(sf::RenderTarget &renderTarget) const {
+    if(m_InPocket)
+        return;
+
     shader.setUniform("u_Color", sf::Glsl::Vec4(m_Color));
     shader.setUniform("u_Number", m_Number);
     shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
@@ -82,6 +88,11 @@ void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float 
     const glm::quat rotationY = glm::angleAxis(movement.x / RADIUS, glm::vec3(0.0f, 1.0f, 0.0f));
 
     m_Rotation = rotationX * rotationY * m_Rotation;
+}
+
+void Ball::pocket() {
+    m_InPocket = true;
+    Audio::play(m_Sound, Audio::AudioType::POCKET, 100.0f, 1.0f);
 }
 
 const sf::Color &Ball::getColor(int number) {

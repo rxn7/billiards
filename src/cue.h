@@ -11,6 +11,7 @@ public:
     void render(sf::RenderTarget &renderTarget) const;
     void update(float dt);
     void hitAnimationStep(float dt);
+    void startAiming();
     void triggerHitAnimation();
 
 public:

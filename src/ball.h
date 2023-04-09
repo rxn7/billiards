@@ -15,6 +15,7 @@ public:
 public:
     void update(const float dt);
     void render(sf::RenderTarget &renderTarget) const;
+    void pocket();
 
     inline bool isPointOverlapping(const sf::Vector2f &v) const { 
         sf::Vector2f d = m_Position - v;
@@ -39,6 +40,7 @@ public:
     sf::Vector2f m_Position = {0,0};
     float m_Scale = 1.0f;
     sf::Sound m_Sound;
+    bool m_InPocket = false;
 
 private:
     glm::quat m_Rotation;

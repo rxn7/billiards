@@ -3,14 +3,26 @@
 #include "mathUtils.h"
 #include "audio.h"
 #include "random.h"
+#include "pocket.h"
 
 void Physics::update(std::vector<Ball> &balls, const Table &table) {
     std::vector<Collision> collisions;
 
     for(Ball &ball : balls)  {
+        if(ball.m_InPocket)
+            continue;
+
+        if(Pocket::isBallInsideAny(ball)) {
+            ball.pocket();
+            continue;
+        }
+
         for(Ball &target : balls) {
             // NOTE: This will not work if there would be multiple balls with the same number 
             if(ball.getNumber() == target.getNumber())
+                continue;
+
+            if(target.m_InPocket)
                 continue;
 
             const float distanceSquared = MathUtils::lengthSqr(ball.m_Position - target.m_Position);

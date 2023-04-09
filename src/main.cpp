@@ -3,12 +3,15 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/WindowStyle.hpp>
+#include <imgui-SFML.h>
+#include <imgui.h>
 #include <iostream>
 #include <memory>
 #include <algorithm>
 #include <cmath>
 
 #include "audio.h"
+#include "pocket.h"
 #include "random.h"
 #include "main.h"
 #include "ball.h"
@@ -34,25 +37,95 @@ int main(int argc, const char **argv) {
         float dt = frameClock.restart().asSeconds();
 
         sf::Event event;
-        while(window.pollEvent(event))
+        while(window.pollEvent(event)) {
+            ImGui::SFML::ProcessEvent(window, event);
             handleEvent(event);
-
-        window.clear();
-
-        Physics::update(balls, table);
-
-        table.render(window);
-
-        for(Ball &ball : balls) {
-            ball.update(dt);
-            ball.render(window);
         }
 
-        cue->update(dt);
-        cue->render(window);
+        update(dt);
 
+        window.clear();
+        render();
         window.display();
     }
+
+    shutdown();
+}
+
+void init() {
+    if(!sf::Shader::isAvailable()) {
+        std::cerr << "ERROR: Your graphics card doesn't support GLSL shaders.\n";
+        std::exit(EXIT_FAILURE);
+        return;
+    }
+
+    Random::init();
+    Audio::init();
+    Pocket::init(table);
+
+    window.create(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billiard by rxn7", sf::Style::Default);
+    window.setVerticalSyncEnabled(true);
+
+    ImGui::SFML::Init(window);
+
+    view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
+    view.setCenter(0.0f, 0.0f);
+    resize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
+
+    for(int i=0; i<=15; ++i) 
+        balls.emplace_back(i);
+
+    rackBalls();
+
+    cue = std::make_unique<Cue>(window, cueBall);
+}
+
+void shutdown() {
+    ImGui::SFML::Shutdown();
+}
+
+void update(float dt) {
+    Physics::update(balls, table);
+
+    for(Ball &ball : balls)
+        ball.update(dt);
+
+    cue->update(dt);
+}
+
+void render() {
+    table.render(window);
+    Pocket::renderDebug(window);
+
+    for(Ball &ball : balls)
+        ball.render(window);
+
+    cue->render(window);
+}
+
+void rackBalls() {
+    constexpr uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
+    const sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.25, 0.0f);
+
+    for(Ball &ball : balls) {
+        ball.m_Velocity = {0,0};
+        ball.m_InPocket = false;
+    }
+
+    static constexpr float width = std::sqrt(3.0f) * Ball::RADIUS + Physics::COLLISION_MARGIN;
+    static constexpr float height = Ball::DIAMETER + Physics::COLLISION_MARGIN;
+
+    int idx = 0;
+    for(int row=0; row<5; ++row) {
+        for(int col=row; col<5; ++col) {
+            balls[numbers[idx++]].m_Position = position + sf::Vector2f(
+                col * width,
+                row * height - col * Ball::RADIUS
+            );
+        }
+    }
+
+    cueBall.m_Position = sf::Vector2f(-table.getSize().x * (1.0 - INIT_CUE_BALL_POSITION_NORMALIZED) * 0.5f, 0.0f);
 }
 
 void resize(const unsigned int width, const unsigned int height) {
@@ -73,53 +146,6 @@ void resize(const unsigned int width, const unsigned int height) {
     window.setView(view);
 }
 
-void init() {
-    if(!sf::Shader::isAvailable()) {
-        std::cerr << "ERROR: Your graphics card doesn't support GLSL shaders.\n";
-        std::exit(EXIT_FAILURE);
-        return;
-    }
-
-    Audio::init();
-    Random::init();
-
-    for(int i=0; i<=15; ++i) balls.emplace_back(i);
-
-    setupBalls();
-
-    window.create(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billiard by rxn7", sf::Style::Default);
-    window.setVerticalSyncEnabled(true);
-
-    cue = std::make_unique<Cue>(window, cueBall);
-
-    view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
-    view.setCenter(0.0f, 0.0f);
-    resize(BASE_WINDOW_WIDTH, BASE_WINDOW_HEIGHT);
-}
-
-void setupBalls() {
-    constexpr uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
-    const sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.25, 0.0f);
-
-    for(Ball &ball : balls)
-        ball.m_Velocity = {0,0};
-
-    static constexpr float width = std::sqrt(3.0f) * Ball::RADIUS + Physics::COLLISION_MARGIN;
-    static constexpr float height = Ball::DIAMETER + Physics::COLLISION_MARGIN;
-
-    int idx = 0;
-    for(int row=0; row<5; ++row) {
-        for(int col=row; col<5; ++col) {
-            balls[numbers[idx++]].m_Position = position + sf::Vector2f(
-                col * width,
-                row * height - col * Ball::RADIUS
-            );
-        }
-    }
-
-    cueBall.m_Position = sf::Vector2f(-table.getSize().x * (1.0 - INIT_CUE_BALL_POSITION_NORMALIZED) * 0.5f, 0.0f);
-}
-
 void handleEvent(const sf::Event &event) {
     switch(event.type) {
         case sf::Event::Closed:
@@ -132,7 +158,7 @@ void handleEvent(const sf::Event &event) {
         }
 
         case sf::Event::MouseButtonPressed: {
-            cue->m_Visible = true;
+            cue->startAiming();
             break;
         }
 
@@ -153,7 +179,7 @@ void handleEvent(const sf::Event &event) {
                     break;
 
                 case sf::Keyboard::R:
-                    setupBalls();
+                    rackBalls();
                     break;
 
                 default: break;
