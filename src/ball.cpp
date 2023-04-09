@@ -99,7 +99,7 @@ void Ball::init() {
     };
 
     assert(shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
-    assert(numbersTexture.loadFromFile("res/numbers.gif"));
+    assert(numbersTexture.loadFromFile("res/textures/numbers.gif"));
 
     const sf::Vector2f uvs[] = { {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
 

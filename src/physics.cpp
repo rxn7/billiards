@@ -32,15 +32,17 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
 
         const std::pair<bool, sf::Vector2f> tableOverlapResult = table.isBallOverlapping(ball);
         if(tableOverlapResult.first) {
+            float margin = table.getMargin();
+
             if(tableOverlapResult.second.x > 0)
-                ball.m_Position.x = -table.getSize().x * 0.5f + Ball::RADIUS;
+                ball.m_Position.x = -table.getSize().x * 0.5f + Ball::RADIUS + margin;
             else if(tableOverlapResult.second.x < 0)
-                ball.m_Position.x = table.getSize().x * 0.5f - Ball::RADIUS;
+                ball.m_Position.x = table.getSize().x * 0.5f - Ball::RADIUS - margin;
 
             if(tableOverlapResult.second.y > 0)
-                ball.m_Position.y = -table.getSize().y * 0.5f + Ball::RADIUS;
+                ball.m_Position.y = -table.getSize().y * 0.5f + Ball::RADIUS + margin;
             else if(tableOverlapResult.second.y < 0)
-                ball.m_Position.y = table.getSize().y * 0.5f - Ball::RADIUS;
+                ball.m_Position.y = table.getSize().y * 0.5f - Ball::RADIUS - margin;
 
             if(std::fabs(tableOverlapResult.second.x) > 0.1f) 
                 ball.m_Velocity.x *= -1.0f;
