@@ -25,8 +25,9 @@ void Cue::update(float dt) {
     if(!m_Visible)
         return;
 
-    const sf::Vector2f mousePosition = m_Window.mapPixelToCoords(sf::Mouse::getPosition());
-    const sf::Vector2f delta = m_CueBall.m_Position - mousePosition;
+    const sf::Vector2i mousePosition = sf::Mouse::getPosition() - m_Window.getPosition();
+    const sf::Vector2f mousePositionWorld = m_Window.mapPixelToCoords(mousePosition);
+    const sf::Vector2f delta = m_CueBall.m_Position - mousePositionWorld;
     m_Direction = MathUtils::normalized(delta);
 
     m_Force = std::clamp(MathUtils::length(delta), 0.0f, 100.0f);
