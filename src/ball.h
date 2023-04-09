@@ -31,7 +31,7 @@ private:
     void applyRotation(const float speed, const sf::Vector2f &movement, const float dt);
 
 public:
-    static constexpr float RADIUS = 20.0f;
+    static constexpr float RADIUS = 15.0f;
     static constexpr float DIAMETER = RADIUS * 2.0f;
     static constexpr float DRAG_COEFFICIENT = 0.3f;
     static constexpr float MASS = 0.160f;
