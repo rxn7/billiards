@@ -15,6 +15,7 @@ static void addBuffer(Audio::AudioType type, const std::string &path) {
 void Audio::init() {
     addBuffer(AudioType::BALL_WITH_BALL_COLLISION, BALL_WITH_BALL_COLLISION_SOUND_PATH);
     addBuffer(AudioType::BALL_WITH_TABLE_COLLISION, BALL_WITH_TABLE_COLLISION_SOUND_PATH);
+    addBuffer(AudioType::CUE_HIT, CUE_HIT_SOUND_PATH);
 }
 
 sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {

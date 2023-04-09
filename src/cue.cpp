@@ -1,4 +1,5 @@
 #include "cue.h"
+#include "audio.h"
 #include "mathUtils.h"
 
 Cue::Cue(const sf::RenderWindow &window, Ball &cueBall) : m_Window(window), m_CueBall(cueBall) {
@@ -9,6 +10,23 @@ Cue::Cue(const sf::RenderWindow &window, Ball &cueBall) : m_Window(window), m_Cu
 }
 
 void Cue::update(float dt) {
+    if(m_HitAnimation) {
+        const sf::Vector2f delta = m_CueBall.m_Position - m_Sprite.getPosition();
+        const sf::Vector2f direction = MathUtils::normalized(delta);
+        const float distance = MathUtils::length(delta);
+        if(distance <= Ball::RADIUS) {
+            m_CueBall.m_Velocity += m_Direction * m_Force * 10.0f;
+            m_Visible = false;
+            m_HitAnimation = false;
+            Audio::play(m_Sound, Audio::AudioType::CUE_HIT, 100.0f, 1.0f);
+        }
+        m_Sprite.move(direction * 2000.0f * dt);
+        return;
+    }
+
+    if(!m_Visible)
+        return;
+
     const sf::Vector2i mousePosition = sf::Mouse::getPosition() - m_Window.getPosition();
     const sf::Vector2f mousePositionWorld = m_Window.mapPixelToCoords(mousePosition);
     const sf::Vector2f delta = m_CueBall.m_Position - mousePositionWorld;
@@ -28,7 +46,6 @@ void Cue::render(sf::RenderTarget &renderTarget) const {
     renderTarget.draw(m_Sprite);
 }
 
-void Cue::hit() {
-    m_CueBall.m_Velocity += m_Direction * m_Force * 10.0f;
-    m_Visible = false;
+void Cue::triggerHitAnimation() {
+    m_HitAnimation = true;
 }

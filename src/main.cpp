@@ -137,8 +137,7 @@ void handleEvent(const sf::Event &event) {
         }
 
         case sf::Event::MouseButtonReleased:
-            if(cue->m_Visible)
-                cue->hit();
+            cue->triggerHitAnimation();
             break;
 
         case sf::Event::KeyPressed:
