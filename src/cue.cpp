@@ -14,9 +14,9 @@ Cue::Cue(const sf::RenderWindow &window, Ball &cueBall) : m_Window(window), m_Cu
 
 void Cue::update(float dt) {
     if(m_CueBall.m_InPocket)
-        m_Visible = false;
+        m_Aiming = false;
 
-    if(!m_Visible)
+    if(!m_Aiming)
         return;
 
     if(m_HitAnimation) {
@@ -36,7 +36,7 @@ void Cue::update(float dt) {
 }
 
 void Cue::render(sf::RenderTarget &renderTarget) const {
-    if(!m_Visible)
+    if(!m_Aiming)
         return;
 
     renderTarget.draw(m_Sprite);
@@ -51,7 +51,7 @@ void Cue::hitAnimationStep(float dt) {
 
     if(distance <= Ball::RADIUS) {
         m_CueBall.m_Velocity += m_Direction * m_Force * 10.0f;
-        m_Visible = false;
+        m_Aiming = false;
         m_HitAnimation = false;
         Audio::play(m_Sound, Audio::AudioType::CUE_HIT, 100.0f, 1.0f);
     }
@@ -61,13 +61,12 @@ void Cue::startAiming() {
     if(m_CueBall.m_InPocket)
         return;
 
-    m_Visible = true;
+    m_Aiming = true;
 }
 
-void Cue::triggerHitAnimation() {
-    if(m_CueBall.m_InPocket)
+void Cue::hit() {
+    if(!m_Aiming || m_CueBall.m_InPocket)
         return;
 
-    m_Visible = true;
     m_HitAnimation = true;
 }

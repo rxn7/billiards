@@ -29,7 +29,8 @@ static std::vector<Ball> balls;
 static Table table;
 static std::unique_ptr<Cue> cue;
 static sf::View view;
-static bool renderPockets;
+static bool renderDebugPockets = false;
+static bool renderDebugBalls = false;
 
 int main(int argc, const char **argv) {
     init();
@@ -67,6 +68,7 @@ void init() {
     Random::init();
     Audio::init();
     Pocket::init(table);
+    Ball::init();
 
     window.create(sf::VideoMode(BASE_WINDOW_HEIGHT, BASE_WINDOW_HEIGHT), "Billiard by rxn7", sf::Style::Default);
     window.setVerticalSyncEnabled(true);
@@ -103,11 +105,15 @@ void render() {
     window.setView(view);
     table.render(window);
 
-    if(renderPockets)
+    if(renderDebugPockets)
         Pocket::renderDebug(window);
 
     for(Ball &ball : balls)
         ball.render(window);
+
+    for(Ball &ball : balls)
+        if(renderDebugBalls)
+            ball.renderDebug(window);
 
     cue->render(window);
     
@@ -116,7 +122,8 @@ void render() {
 
 void imgui(float dt) {
     ImGui::Begin("Debug");
-    ImGui::Checkbox("Render pockets", &renderPockets);
+    ImGui::Checkbox("Render debug pockets", &renderDebugPockets);
+    ImGui::Checkbox("Render debug balls", &renderDebugBalls);
     ImGui::End();
 }
 
@@ -175,12 +182,14 @@ void handleEvent(const sf::Event &event) {
         }
 
         case sf::Event::MouseButtonPressed: {
-            cue->startAiming();
+            const sf::Vector2f mousePositionWorld(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+            if(cueBall.isPointOverlapping(mousePositionWorld, Ball::RADIUS * 2))
+                cue->startAiming();
             break;
         }
 
         case sf::Event::MouseButtonReleased:
-            cue->triggerHitAnimation();
+            cue->hit();
             break;
 
         case sf::Event::KeyPressed:

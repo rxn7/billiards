@@ -4,6 +4,7 @@
 #include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Vertex.hpp>
@@ -21,7 +22,7 @@
 static sf::Shader shader;
 static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
 static sf::Texture numbersTexture;
-static bool initialized = false;
+static sf::RectangleShape debugShape;
 
 static const sf::Color BALL_COLORS[] = {
     sf::Color(255, 255, 255),
@@ -37,9 +38,6 @@ static const sf::Color BALL_COLORS[] = {
 
 Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     assert(number >= 0 && number <= 15);
-
-    if(!initialized)
-        init();
 
     m_Rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
@@ -73,6 +71,16 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
     renderTarget.draw(vertexArray, states);
 }
 
+void Ball::renderDebug(sf::RenderTarget &renderTarget) const {
+    if(m_InPocket)
+        return;
+
+    debugShape.setSize(sf::Vector2f(MathUtils::length(m_Velocity), 2.0f));
+    debugShape.setPosition(m_Position);
+    debugShape.setRotation(glm::degrees(std::atan2(m_Velocity.y, m_Velocity.x)));
+    renderTarget.draw(debugShape);
+}
+
 void Ball::applyDrag(const float speed, const float dt) {
     const sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
     const sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
@@ -103,8 +111,6 @@ const sf::Color &Ball::getColor(int number) {
 } 
 
 void Ball::init() {
-    initialized = true;
-
     const char *fragShader = {
         #include "../shaders_out/ball.frag.glsl"
     };
@@ -120,4 +126,6 @@ void Ball::init() {
         v.position = uvs[i] * 2.0f - sf::Vector2f(1.0f, 1.0f);
         vertexArray.append(v);
     }
+
+    debugShape.setFillColor(sf::Color::Blue);
 }

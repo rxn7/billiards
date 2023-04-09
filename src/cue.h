@@ -12,10 +12,10 @@ public:
     void update(float dt);
     void hitAnimationStep(float dt);
     void startAiming();
-    void triggerHitAnimation();
+    void hit();
 
 public:
-    bool m_Visible = false;
+    bool m_Aiming = false;
 
 private:
     static constexpr float HIT_ANIMATION_SPEED = 2000.0f;

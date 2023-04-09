@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mathUtils.h"
 #include "table.h"
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics.hpp>
@@ -13,13 +14,15 @@ public:
     Ball(const uint8_t number);
 
 public:
+    static void init();
     void update(const float dt);
     void render(sf::RenderTarget &renderTarget) const;
+    void renderDebug(sf::RenderTarget &renderTarget) const;
     void pocket();
 
-    inline bool isPointOverlapping(const sf::Vector2f &v) const { 
-        sf::Vector2f d = m_Position - v;
-        return (d.x*d.x + d.y*d.y) < Ball::RADIUS * Ball::RADIUS;
+    inline bool isPointOverlapping(const sf::Vector2f &v, float radius = RADIUS) const { 
+        const sf::Vector2f delta = m_Position - v;
+        return MathUtils::lengthSqr(delta) < radius * radius;
     }
 
     static const sf::Color &getColor(const int number);
@@ -27,7 +30,6 @@ public:
     inline uint8_t getNumber() const { return m_Number; }
 
 private:
-    static void init();
     void applyDrag(const float speed, const float dt);
     void applyRotation(const float speed, const sf::Vector2f &movement, const float dt);
 
