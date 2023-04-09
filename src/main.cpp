@@ -100,7 +100,7 @@ void init() {
 
 void setupBalls() {
     constexpr uint8_t numbers[15] = { 1, 14, 2, 15, 3, 13, 8, 6, 12, 7, 10, 4, 9, 11, 5};
-    const sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.2, 0.0f);
+    const sf::Vector2f position = sf::Vector2f(table.getSize().x * 0.25, 0.0f);
 
     for(Ball &ball : balls)
         ball.m_Velocity = {0,0};
@@ -109,11 +109,11 @@ void setupBalls() {
     static constexpr float height = Ball::DIAMETER + Physics::COLLISION_MARGIN;
 
     int idx = 0;
-    for(int row=-2; row<=2; ++row) {
-        for(int col=row; col<=2; ++col) {
+    for(int row=0; row<5; ++row) {
+        for(int col=row; col<5; ++col) {
             balls[numbers[idx++]].m_Position = position + sf::Vector2f(
                 col * width,
-                row * height - col * Ball::RADIUS + Ball::DIAMETER 
+                row * height - col * Ball::RADIUS
             );
         }
     }
