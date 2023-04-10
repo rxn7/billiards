@@ -6,6 +6,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 #include <SFML/Graphics/Transform.hpp>
+#include <SFML/Graphics/Glsl.hpp>
 
 namespace MathUtils {
     inline float lengthSqr(const sf::Vector2f &v) {
@@ -37,4 +38,9 @@ namespace MathUtils {
     }
 
     sf::Transform rotationMatrix(const sf::Vector3f &axis, float angle);
+
+    inline sf::Glsl::Vec3 colorToGlslVec3(const sf::Color &color) {
+        constexpr float byteToFloatColor = 1.0f / 255.0f;
+        return sf::Glsl::Vec3(color.r * byteToFloatColor, color.g * byteToFloatColor, color.b * byteToFloatColor);
+    }
 }

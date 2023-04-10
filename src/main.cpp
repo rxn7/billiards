@@ -12,6 +12,7 @@
 #include <cmath>
 
 #include "audio.h"
+#include "lightingProperties.h"
 #include "pocket.h"
 #include "random.h"
 #include "main.h"
@@ -30,6 +31,8 @@ static Table table;
 static std::unique_ptr<Cue> cue;
 static sf::View view;
 static sf::Time deltaTime;
+
+static LightingProperties lightingProperties;
 
 static bool renderDebugPockets = false;
 static bool renderDebugBalls = false;
@@ -106,6 +109,8 @@ void update() {
         ball.update(dt);
 
     cue->update(dt);
+
+    const sf::Vector2f mousePosition = window.mapPixelToCoords(sf::Mouse::getPosition(window), view);
 }
 
 void render(RenderStats &stats) {
@@ -121,15 +126,22 @@ void render(RenderStats &stats) {
     table.render(window);
     stats.tableRenderTime = renderTimeClock.restart();
 
-    for(Ball &ball : balls)
+    Ball::s_Shader.setUniform("u_LightPosition", lightingProperties.lightPosition);
+    Ball::s_Shader.setUniform("u_LightColor", lightingProperties.lightColor);
+    Ball::s_Shader.setUniform("u_AmbientIntensity", lightingProperties.ambientIntensity);
+    Ball::s_Shader.setUniform("u_DiffuseIntensity", lightingProperties.diffuseIntensity);
+    Ball::s_Shader.setUniform("u_SpecularIntensity", lightingProperties.specularIntensity);
+    Ball::s_Shader.setUniform("u_Shininess", lightingProperties.shininess);
+    for(const Ball &ball : balls)
         ball.render(window);
+
     stats.ballsRenderTime = renderTimeClock.restart();
 
     cue->render(window);
     stats.cueRenderTime = renderTimeClock.restart();
 
     if(renderDebugBalls)
-        for(Ball &ball : balls)
+        for(const Ball &ball : balls)
             ball.renderDebug(window);
 
     if(renderDebugPockets)
@@ -153,6 +165,16 @@ void imgui(const RenderStats &renderStats) {
     }
 
     if(ImGui::TreeNode("Options")) {
+        if(ImGui::TreeNode("Lighting")) {
+            ImGui::SliderFloat3("Light position", reinterpret_cast<float*>(&lightingProperties.lightPosition), -1000.0f, 1000.0f);
+            ImGui::SliderFloat3("Light color", reinterpret_cast<float*>(&lightingProperties.lightColor), 0.0f, 1.0f);
+            ImGui::SliderFloat("Ambient intensity", &lightingProperties.ambientIntensity, 0.0f, 1.0f);
+            ImGui::SliderFloat("Diffuse intensity", &lightingProperties.diffuseIntensity, 0.0f, 1.0f);
+            ImGui::SliderFloat("Specular intensity", &lightingProperties.specularIntensity, 0.0f, 1.0f);
+            ImGui::SliderFloat("Shininess", &lightingProperties.shininess, 0.0f, 100.0f);
+            ImGui::TreePop();
+        }
+
         if(ImGui::Checkbox("VSync", &vsync))
             window.setVerticalSyncEnabled(vsync);
 

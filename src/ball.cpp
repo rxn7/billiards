@@ -19,7 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "collision.h"
 
-static sf::Shader shader;
+sf::Shader Ball::s_Shader;
 static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
 static sf::Texture numbersTexture;
 static sf::RectangleShape debugShape;
@@ -58,16 +58,16 @@ void Ball::render(sf::RenderTarget &renderTarget) const {
     if(m_InPocket)
         return;
 
-    shader.setUniform("u_Color", sf::Glsl::Vec4(m_Color));
-    shader.setUniform("u_Number", m_Number);
-    shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
-    shader.setUniform("u_NumbersTexture", numbersTexture);
+    s_Shader.setUniform("u_Color", MathUtils::colorToGlslVec3(m_Color));
+    s_Shader.setUniform("u_Number", m_Number);
+    s_Shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
+    s_Shader.setUniform("u_Position", m_Position);
 
     sf::Transform transform;
     transform.translate(m_Position);
     transform.scale(RADIUS * m_Scale, RADIUS * m_Scale);
 
-    const sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &shader);
+    const sf::RenderStates states(sf::BlendAlpha, transform, nullptr, &s_Shader);
     renderTarget.draw(vertexArray, states);
 }
 
@@ -115,8 +115,9 @@ void Ball::init() {
         #include "../shaders_out/ball.frag.glsl"
     };
 
-    assert(shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
+    assert(s_Shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
     assert(numbersTexture.loadFromFile("assets/textures/numbers.gif"));
+    s_Shader.setUniform("u_NumbersTexture", numbersTexture);
 
     const sf::Vector2f uvs[] = { {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}, {1.0f, 0.0f} };
 

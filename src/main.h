@@ -3,6 +3,8 @@
 #include <iostream>
 #include <memory>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Shader.hpp>
+#include "lightingProperties.h"
 #include "renderStats.h"
 
 static constexpr float BASE_WINDOW_WIDTH = 1280.0f;

@@ -39,6 +39,7 @@ public:
     static constexpr float DRAG_COEFFICIENT = 0.33f;
     static constexpr float MASS = 0.160f;
 
+    static sf::Shader s_Shader;
     sf::Vector2f m_Velocity = {0,0};
     sf::Vector2f m_Position = {0,0};
     float m_Scale = 1.0f;
