@@ -61,8 +61,9 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
             if(std::fabs(tableOverlapResult.second.y) > 0.1f) 
                 ball.m_Velocity.y *= -1.0f;
 
-            const float volume = std::clamp(MathUtils::length(ball.m_Velocity) / 10.0f, 1.0f, 100.0f);
-            Audio::play(ball.m_Sound, Audio::AudioType::BALL_WITH_TABLE_COLLISION, volume, Random::rangeF(0.9f, 1.1f));
+
+            const float velocityPercentage = std::clamp(MathUtils::length(ball.m_Velocity) / 1000.0f, 0.0f, 1.0f);
+            Audio::play(ball.m_Sound, Audio::AudioType::BALL_WITH_TABLE_COLLISION, velocityPercentage * 100.0f, (1.0f + velocityPercentage) * 0.5f);
         }
     }
 
@@ -78,7 +79,7 @@ void Physics::update(std::vector<Ball> &balls, const Table &table) {
         col.ball->m_Velocity -= forceVector;
         col.target->m_Velocity += forceVector;
 
-        const float volume = std::clamp(std::fabs(force) / 100.0f, 1.0f, 100.0f);
-        Audio::play(col.ball->m_Sound, Audio::AudioType::BALL_WITH_BALL_COLLISION, volume, Random::rangeF(0.9f, 1.1f));
+        const float forcePercentage = std::clamp(std::fabs(force) / 1000.0f, 0.0f, 1.0f);
+        Audio::play(col.ball->m_Sound, Audio::AudioType::BALL_WITH_BALL_COLLISION, forcePercentage * 100.0f, (1.0f + forcePercentage) * 0.5f);
     }
 }

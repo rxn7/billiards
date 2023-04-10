@@ -14,11 +14,18 @@ public:
     void startAiming();
     void hit();
 
+private:
+    void actualHit();
+
 public:
     bool m_Aiming = false;
 
 private:
     static constexpr float HIT_ANIMATION_SPEED = 2000.0f;
+    static constexpr float MIN_FORCE = 1.0f;
+    static constexpr float MAX_FORCE = 1000.0f;
+    static constexpr float VISUAL_RANGE = 100.0f;
+
     const sf::RenderWindow &m_Window;
     Ball &m_CueBall;
     float m_Force;
