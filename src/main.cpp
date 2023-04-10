@@ -139,21 +139,20 @@ void render(RenderStats &stats) {
 }
 
 void imgui(const RenderStats &renderStats) {
-    static bool optionsHeaderCollapsed = true;
-    static bool renderStatsHeaderCollapsed = true;
     static bool vsync = true;
 
     ImGui::Begin("Debug");
-    if(ImGui::CollapsingHeader("Render stats", &optionsHeaderCollapsed)) {
+    if(ImGui::TreeNode("Render stats")) {
         ImGui::Text("FPS: %i", renderStats.fps);
         ImGui::Text("Frame time: %.10f ms", renderStats.frameTimeMs);
         ImGui::Text("Balls render time: %.10f ms", renderStats.ballsRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Table render time: %.10f ms", renderStats.tableRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Cue render time: %.10f ms", renderStats.cueRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Debug render time: %.10f ms", renderStats.debugRenderTime.asMicroseconds() * 0.001f);
+        ImGui::TreePop();
     }
 
-    if(ImGui::CollapsingHeader("Options", &optionsHeaderCollapsed)) {
+    if(ImGui::TreeNode("Options")) {
         if(ImGui::Checkbox("VSync", &vsync))
             window.setVerticalSyncEnabled(vsync);
 
@@ -162,6 +161,8 @@ void imgui(const RenderStats &renderStats) {
         if(ImGui::Checkbox("Camera follow cue ball", &debugFollowCueBall))
             if(!debugFollowCueBall)
                 view.setCenter(0,0);
+
+        ImGui::TreePop();
     }
 
     ImGui::End();
