@@ -121,9 +121,9 @@ void render() {
 }
 
 void imgui(float dt) {
-    ImGui::Begin("Debug");
-    ImGui::Checkbox("Render debug pockets", &renderDebugPockets);
-    ImGui::Checkbox("Render debug balls", &renderDebugBalls);
+    ImGui::Begin("Render debug");
+    ImGui::Checkbox("Pockets", &renderDebugPockets);
+    ImGui::Checkbox("Balls velocities", &renderDebugBalls);
     ImGui::End();
 }
 
@@ -167,6 +167,7 @@ void resize(const unsigned int width, const unsigned int height) {
     }
 
     window.setSize({width, height});
+
     window.setView(view);
 }
 
