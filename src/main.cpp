@@ -29,8 +29,10 @@ static std::vector<Ball> balls;
 static Table table;
 static std::unique_ptr<Cue> cue;
 static sf::View view;
+
 static bool renderDebugPockets = false;
 static bool renderDebugBalls = false;
+static bool debugFollowCueBall = false;
 
 int main(int argc, const char **argv) {
     init();
@@ -102,7 +104,11 @@ void update(float dt) {
 }
 
 void render() {
+    if(debugFollowCueBall)
+        view.setCenter(cueBall.m_Position);
+
     window.setView(view);
+
     table.render(window);
 
     if(renderDebugPockets)
@@ -121,9 +127,14 @@ void render() {
 }
 
 void imgui(float dt) {
-    ImGui::Begin("Render debug");
-    ImGui::Checkbox("Pockets", &renderDebugPockets);
-    ImGui::Checkbox("Balls velocities", &renderDebugBalls);
+    ImGui::Begin("Debug");
+    ImGui::Checkbox("Pockets debug", &renderDebugPockets);
+    ImGui::Checkbox("Balls velocities debug", &renderDebugBalls);
+
+    if(ImGui::Checkbox("Camera follow cue ball", &debugFollowCueBall))
+        if(!debugFollowCueBall)
+            view.setCenter(0,0);
+
     ImGui::End();
 }
 
@@ -153,22 +164,10 @@ void rackBalls() {
 }
 
 void resize(const unsigned int width, const unsigned int height) {
-    static constexpr float baseRatio = BASE_WINDOW_WIDTH / BASE_WINDOW_HEIGHT;
-    const float windowRatio = static_cast<float>(width) / static_cast<float>(height);
-
-    if(width >= baseRatio * height) {
-        const float size = static_cast<float>(height) * baseRatio;
-        const float offset = (width - size) * 0.5f;
-        view.setViewport({offset / width, 0.0f, size / static_cast<float>(width), 1.0f});
-    } else {
-        const float size = static_cast<float>(width) / baseRatio;
-        const float offset = (height - size) * 0.5f;
-        view.setViewport({0.0f, offset / height, 1.0f, size / static_cast<float>(height)});
-    }
-
     window.setSize({width, height});
 
-    window.setView(view);
+    const float aspectRatio = static_cast<float>(height) / static_cast<float>(width);
+    view.setSize(BASE_WINDOW_WIDTH, BASE_WINDOW_WIDTH * aspectRatio);
 }
 
 void handleEvent(const sf::Event &event) {
@@ -197,12 +196,10 @@ void handleEvent(const sf::Event &event) {
             switch(event.key.code) {
                 case sf::Keyboard::I:
                     view.zoom(1.1);
-                    window.setView(view);
                     break;
 
                 case sf::Keyboard::O:
                     view.zoom(0.9);
-                    window.setView(view);
                     break;
 
                 case sf::Keyboard::R:
