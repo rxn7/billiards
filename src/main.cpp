@@ -29,6 +29,7 @@ static std::vector<Ball> balls;
 static Table table;
 static std::unique_ptr<Cue> cue;
 static sf::View view;
+static sf::Time deltaTime;
 
 static bool renderDebugPockets = false;
 static bool renderDebugBalls = false;
@@ -38,21 +39,23 @@ int main(int argc, const char **argv) {
     init();
 
     sf::Clock frameClock;
+    sf::Event event;
+    RenderStats renderStats;
     while(window.isOpen()) {
-        float dt = frameClock.restart().asSeconds();
+        deltaTime = frameClock.restart();
 
-        sf::Event event;
         while(window.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(window, event);
             handleEvent(event);
         }
 
-        update(dt);
+        update();
 
         window.clear();
 
-        imgui(dt);
-        render();
+        render(renderStats);
+        imgui(renderStats);
+        ImGui::SFML::Render(window);
 
         window.display();
     }
@@ -93,8 +96,10 @@ void shutdown() {
     ImGui::SFML::Shutdown();
 }
 
-void update(float dt) {
-    ImGui::SFML::Update(window, sf::seconds(dt));
+void update() {
+    float dt = deltaTime.asSeconds();
+
+    ImGui::SFML::Update(window, deltaTime);
     Physics::update(balls, table);
 
     for(Ball &ball : balls)
@@ -103,37 +108,61 @@ void update(float dt) {
     cue->update(dt);
 }
 
-void render() {
+void render(RenderStats &stats) {
+    stats.frameTimeMs = deltaTime.asMilliseconds() * 0.001f;
+    stats.fps = 1.0f / deltaTime.asSeconds();
+
     if(debugFollowCueBall)
         view.setCenter(cueBall.m_Position);
 
     window.setView(view);
 
+    sf::Clock renderTimeClock;
     table.render(window);
+    stats.tableRenderTime = renderTimeClock.restart();
+
+    for(Ball &ball : balls)
+        ball.render(window);
+    stats.ballsRenderTime = renderTimeClock.restart();
+
+    cue->render(window);
+    stats.cueRenderTime = renderTimeClock.restart();
+
+    if(renderDebugBalls)
+        for(Ball &ball : balls)
+            ball.renderDebug(window);
 
     if(renderDebugPockets)
         Pocket::renderDebug(window);
 
-    for(Ball &ball : balls)
-        ball.render(window);
-
-    for(Ball &ball : balls)
-        if(renderDebugBalls)
-            ball.renderDebug(window);
-
-    cue->render(window);
-    
-    ImGui::SFML::Render(window);
+    stats.debugRenderTime = renderTimeClock.restart();
 }
 
-void imgui(float dt) {
-    ImGui::Begin("Debug");
-    ImGui::Checkbox("Pockets debug", &renderDebugPockets);
-    ImGui::Checkbox("Balls velocities debug", &renderDebugBalls);
+void imgui(const RenderStats &renderStats) {
+    static bool optionsHeaderCollapsed = true;
+    static bool renderStatsHeaderCollapsed = true;
+    static bool vsync = true;
 
-    if(ImGui::Checkbox("Camera follow cue ball", &debugFollowCueBall))
-        if(!debugFollowCueBall)
-            view.setCenter(0,0);
+    ImGui::Begin("Debug");
+    if(ImGui::CollapsingHeader("Render stats", &optionsHeaderCollapsed)) {
+        ImGui::Text("FPS: %i", renderStats.fps);
+        ImGui::Text("Frame time: %.10f ms", renderStats.frameTimeMs);
+        ImGui::Text("Balls render time: %.10f ms", renderStats.ballsRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Table render time: %.10f ms", renderStats.tableRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Cue render time: %.10f ms", renderStats.cueRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Debug render time: %.10f ms", renderStats.debugRenderTime.asMicroseconds() * 0.001f);
+    }
+
+    if(ImGui::CollapsingHeader("Options", &optionsHeaderCollapsed)) {
+        if(ImGui::Checkbox("VSync", &vsync))
+            window.setVerticalSyncEnabled(vsync);
+
+        ImGui::Checkbox("Draw pockets", &renderDebugPockets);
+        ImGui::Checkbox("Draw ball's velocity", &renderDebugBalls);
+        if(ImGui::Checkbox("Camera follow cue ball", &debugFollowCueBall))
+            if(!debugFollowCueBall)
+                view.setCenter(0,0);
+    }
 
     ImGui::End();
 }
