@@ -5,5 +5,4 @@ struct GameOptions {
     bool cameraFollowCueBall = false;
     bool renderBallVelocity = false;
     bool renderPocket = false;
-    bool renderCueDirection = false;
 };
