@@ -6,8 +6,8 @@ uniform sampler2D u_NumbersTexture;
 
 uniform vec3 u_Color;
 
-uniform vec2 u_CameraPosition;
 uniform vec2 u_Position;
+uniform vec2 u_CameraToBallDirection;
 uniform vec3 u_LightToBallDirection;
 uniform mat3 u_RotationMatrix;
 
@@ -76,10 +76,8 @@ void main() {
   vec2 uv = gl_TexCoord[0].xy * 2.0 - 1.0;
   vec3 normal = vec3(uv, sqrt(1.0 - clamp(dot(uv, uv), 0.0, 1.0)));
 
-  vec3 view = vec3(normalize(u_CameraPosition - u_Position), 0);
-
   float diffuse = u_DiffuseIntensity * max(dot(normal, u_LightToBallDirection), 0.0);
-  float specular = u_SpecularIntensity * pow(max(dot(view, reflect(-u_LightToBallDirection, normal)), 0.0), u_Shininess);
+  float specular = u_SpecularIntensity * pow(max(dot(vec3(u_CameraToBallDirection, 0), reflect(-u_LightToBallDirection, normal)), 0.0), u_Shininess);
 
   vec3 color = getColorAtPoint(normal * u_RotationMatrix) * (u_AmbientIntensity + diffuse) + white * specular;
 
