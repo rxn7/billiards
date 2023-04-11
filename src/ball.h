@@ -11,6 +11,7 @@
 
 class Ball {
 public:
+    Ball();
     Ball(const uint8_t number);
 
 public:

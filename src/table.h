@@ -1,12 +1,12 @@
 #pragma once
 
-#include "main.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include "windowProperties.h"
 
 namespace TableColors {
     const sf::Color TOURNAMENT_BLUE = {0, 98, 162};
@@ -25,7 +25,7 @@ public:
     inline const sf::Vector2f &getSize() const { return m_Size; }
 
 public:
-    static constexpr float DEFAULT_WIDTH = BASE_WINDOW_WIDTH * 0.75f;
+    static constexpr float DEFAULT_WIDTH = WindowProperties::WINDOW_BASE_WIDTH * 0.75f;
     static constexpr float DEFAULT_HEIGHT = DEFAULT_WIDTH * 0.5f;
     static constexpr float TEXTURE_MARGIN = 7.0f;
 

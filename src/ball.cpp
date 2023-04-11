@@ -38,7 +38,6 @@ static const sf::Color BALL_COLORS[] = {
 
 Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
     assert(number >= 0 && number <= 15);
-
     m_Rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 

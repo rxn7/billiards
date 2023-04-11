@@ -7,7 +7,7 @@
 
 class Cue {
 public:
-    Cue(const sf::RenderWindow &window, Ball &cueBall);
+    Cue(const sf::RenderWindow &window, Ball *cueBall);
     void render(sf::RenderTarget &renderTarget) const;
     void update(float dt);
     void hitAnimationStep(float dt);
@@ -27,7 +27,7 @@ private:
     static constexpr float VISUAL_RANGE = 100.0f;
 
     const sf::RenderWindow &m_Window;
-    Ball &m_CueBall;
+    Ball *mp_CueBall;
     float m_Force;
     bool m_HitAnimation = false;
     sf::Vector2f m_Direction;
