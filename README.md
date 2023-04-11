@@ -28,7 +28,7 @@ Build and run windows release:
 ```./scripts/run.sh -p windows -r```   
    
 Build and run linux debug:    
-```./scripts/build.sh -p linux``` or  ```./scripts/build.sh``` 
+```./scripts/build.sh -p linux``` or  ```./scripts/build.sh```  
 ```./scripts/run.sh -p linux``` or ```./scripts/run.sh```   
 
 # Devlogs
