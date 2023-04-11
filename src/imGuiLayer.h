@@ -1,6 +1,6 @@
 #pragma once
 
-#include "renderStats.h"
+#include "performanceStats.h"
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 
@@ -13,7 +13,7 @@ public:
 
     void handleEvent(const sf::Event &event) const;
     void update(const sf::Time &frameTime) const;
-    void render(const RenderStats &renderStats) const;
+    void render(const PerformanceStats &performanceStats) const;
 
 private:
     Game &m_Game;

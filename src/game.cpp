@@ -43,7 +43,7 @@ Game::~Game() {
 void Game::start() {
     sf::Clock frameClock;
     sf::Event event;
-    RenderStats renderStats;
+    PerformanceStats performanceStats;
     while(m_Window.isOpen()) {
         m_FrameTime = frameClock.restart();
 
@@ -56,7 +56,7 @@ void Game::start() {
 
         m_Window.clear();
 
-        render(renderStats);
+        render(performanceStats);
 
         m_Window.display();
     }
@@ -73,7 +73,7 @@ void Game::update() {
     m_ImGuiLayer.update(m_FrameTime);
 }
 
-void Game::render(RenderStats &stats) {
+void Game::render(PerformanceStats &stats) {
     stats.frameTimeMs = m_FrameTime.asMilliseconds() * 0.001f;
     stats.fps = 1.0f / m_FrameTime.asSeconds();
 

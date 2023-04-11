@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <SFML/System/Time.hpp>
 
-struct RenderStats {
+struct PerformanceStats {
     float frameTimeMs;
     std::uint32_t fps;
     sf::Time ballsRenderTime;

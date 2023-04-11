@@ -20,15 +20,15 @@ void ImGuiLayer::update(const sf::Time &frameTime) const {
     ImGui::SFML::Update(m_Game.m_Window, frameTime);
 }
 
-void ImGuiLayer::render(const RenderStats &renderStats) const {
+void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
     ImGui::Begin("Debug");
     if(ImGui::TreeNode("Render stats")) {
-        ImGui::Text("FPS: %i", renderStats.fps);
-        ImGui::Text("Frame time: %.10f ms", renderStats.frameTimeMs);
-        ImGui::Text("Balls render time: %.10f ms", renderStats.ballsRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Table render time: %.10f ms", renderStats.tableRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Cue render time: %.10f ms", renderStats.cueRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Debug render time: %.10f ms", renderStats.debugRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("FPS: %i", performanceStats.fps);
+        ImGui::Text("Frame time: %.10f ms", performanceStats.frameTimeMs);
+        ImGui::Text("Balls render time: %.10f ms", performanceStats.ballsRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Table render time: %.10f ms", performanceStats.tableRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Cue render time: %.10f ms", performanceStats.cueRenderTime.asMicroseconds() * 0.001f);
+        ImGui::Text("Debug render time: %.10f ms", performanceStats.debugRenderTime.asMicroseconds() * 0.001f);
         ImGui::TreePop();
     }
 
@@ -48,6 +48,7 @@ void ImGuiLayer::render(const RenderStats &renderStats) const {
 
         ImGui::Checkbox("Draw pockets", &m_Game.m_Options.renderPocket);
         ImGui::Checkbox("Draw ball's velocity", &m_Game.m_Options.renderBallVelocity);
+        ImGui::Checkbox("Draw cue's direction", &m_Game.m_Options.renderCueDirection);
         if(ImGui::Checkbox("Camera follow cue ball", &m_Game.m_Options.cameraFollowCueBall) && !m_Game.m_Options.cameraFollowCueBall)
             m_Game.m_View.setCenter(0,0);
 
