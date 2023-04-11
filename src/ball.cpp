@@ -1,5 +1,6 @@
 #include "ball.h"
 #include "audio.h"
+#include "lightingProperties.h"
 #include "mathUtils.h"
 #include <SFML/Graphics/BlendMode.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -53,10 +54,11 @@ void Ball::update(const float dt) {
     applyRotation(speed, movement, dt);
 }
 
-void Ball::render(sf::RenderTarget &renderTarget) const {
+void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const {
     if(m_InPocket)
         return;
 
+    s_Shader.setUniform("u_LightToBallDirection", MathUtils::normalized(lightProps.lightPosition - sf::Vector3f(m_Position.x, m_Position.y, 0.0f)));
     s_Shader.setUniform("u_Color", MathUtils::colorToGlslVec3(m_Color));
     s_Shader.setUniform("u_Number", m_Number);
     s_Shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));

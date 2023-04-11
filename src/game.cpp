@@ -87,14 +87,13 @@ void Game::render() {
     m_Table.render(m_Window);
 
     sf::Clock ballsRenderTimeClock;
-    Ball::s_Shader.setUniform("u_LightPosition", m_LightProps.lightPosition);
     Ball::s_Shader.setUniform("u_LightColor", m_LightProps.lightColor);
     Ball::s_Shader.setUniform("u_AmbientIntensity", m_LightProps.ambientIntensity);
     Ball::s_Shader.setUniform("u_DiffuseIntensity", m_LightProps.diffuseIntensity);
     Ball::s_Shader.setUniform("u_SpecularIntensity", m_LightProps.specularIntensity);
     Ball::s_Shader.setUniform("u_Shininess", m_LightProps.shininess);
     for(const Ball &ball : m_Balls)
-        ball.render(m_Window);
+        ball.render(m_Window, m_LightProps);
     m_PerfStats.ballsRenderTime = ballsRenderTimeClock.getElapsedTime();
 
     mp_Cue->render(m_Window);

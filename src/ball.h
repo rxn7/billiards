@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lightingProperties.h"
 #include "mathUtils.h"
 #include "table.h"
 #include <SFML/Audio/Sound.hpp>
@@ -17,7 +18,7 @@ public:
 public:
     static void init();
     void update(const float dt);
-    void render(sf::RenderTarget &renderTarget) const;
+    void render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const;
     void renderDebug(sf::RenderTarget &renderTarget) const;
     void pocket();
 
