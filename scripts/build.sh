@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-target="linux"
-procedure="all"
+platform="linux"
+release=false
 
-while getopts "t:p" arg; do
+while getopts "rp:" arg; do
 	case $arg in
-		t) target=$OPTARG;;
-		p) procedure=$OPTARG;;
+		p) platform=$OPTARG;;
+		r) release=true;;
 	esac
 done
 
-makefile="make/$target.mk"
+target=$([ "$release" == "true" ] && echo "release" || echo "debug")
+makefile="make/$platform.mk"
 
-echo "Building using makefile $makefile..." 
-
-make -f "$makefile" "$procedure"
+printf "Building for %s:%s\n\n" "$platform" "$target"
+make -f "$makefile" all "TARGET=$target"

@@ -1,9 +1,12 @@
 #include "game.h"
 #include "imGuiLayer.h"
 
+#ifndef NO_IMGUI
 #include <imgui.h>
 #include <imgui-SFML.h>
+#endif
 
+#ifndef NO_IMGUI
 ImGuiLayer::ImGuiLayer(Game &game) : m_Game(game) {
     ImGui::SFML::Init(m_Game.m_Window);
 }
@@ -57,3 +60,15 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
     ImGui::End();
     ImGui::SFML::Render(m_Game.m_Window);
 }
+#else
+ImGuiLayer::ImGuiLayer(Game &game) : m_Game(game) { }
+
+ImGuiLayer::~ImGuiLayer() { }
+
+void ImGuiLayer::handleEvent(const sf::Event &event) const { }
+
+void ImGuiLayer::update(const sf::Time &frameTime) const { }
+
+void ImGuiLayer::render(const PerformanceStats &performanceStats) const { }
+
+#endif

@@ -1,13 +1,22 @@
-.PHONY: setup compile validate_shaders compile_shaders create_dirs copy_assets clean
+# .PHONY: setup compile validate_shaders compile_shaders create_dirs copy_assets clean all
 
-OBJ_DIR += obj/$(PLATFORM)
-SRC_DIR += src/$(PLATFORM)
-BIN_DIR += bin/$(PLATFORM)
+TARGET ?= debug
+OBJ_DIR += obj/$(PLATFORM)/$(TARGET)
+BIN_DIR += bin/$(PLATFORM)/$(TARGET)
 OUT := $(BIN_DIR)/billiards
-INCFLAGS += -Isrc -Ishaders_out
+INCFLAGS += -Isrc -Ishaders_out -Ivendor/imgui -Ivendor/imgui-sfml
 CFLAGS += -std=c++20
 SRC += $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
+SRC += $(wildcard vendor/*.cpp vendor/*/*.cpp vendor/*/*/*.cpp)
 OBJ += $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
+
+ifeq ($(TARGET), "debug")
+	CFLAGS += "-DDEBUG"
+	CFLAGS += "-g3"
+else
+	CFLAGS += "-DRELEASE"
+	CFLAGS += "-O3"
+endif
 
 setup: validate_shaders compile_shaders create_dirs copy_assets
 compile: $(OBJ) $(OUT)
@@ -38,4 +47,4 @@ copy_assets:
 	@cp -r assets $(BIN_DIR)/
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) shaders_out
+	rm -rf obj bin shaders_out
