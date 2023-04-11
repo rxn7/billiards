@@ -98,8 +98,15 @@ void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float 
 }
 
 void Ball::pocket() {
-    m_InPocket = true;
     Audio::play(m_Sound, Audio::AudioType::POCKET);
+
+    if(m_Number == 0) {
+        m_Position = sf::Vector2f(0,0);
+        m_Velocity = sf::Vector2f(0,0);
+        return;
+    }
+
+    m_InPocket = true;
 }
 
 const sf::Color &Ball::getColor(int number) {
