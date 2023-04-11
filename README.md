@@ -23,11 +23,11 @@ Args:
 - Run release version ```-r```  
 
 # Example build and run:
-Build and run windows release:
+Build and run windows release:   
 ```./scripts/build.sh -p windows -r```   
 ```./scripts/run.sh -p windows -r```   
    
-Build and run linux debug:
+Build and run linux debug:    
 ```./scripts/build.sh -p linux``` or  ```./scripts/build.sh``` 
 ```./scripts/run.sh -p linux``` or ```./scripts/run.sh```   
 
