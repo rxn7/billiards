@@ -6,7 +6,6 @@ uniform sampler2D u_NumbersTexture;
 
 uniform vec3 u_Color;
 
-uniform vec2 u_Position;
 uniform vec2 u_CameraToBallDirection;
 uniform vec3 u_LightToBallDirection;
 uniform mat3 u_RotationMatrix;

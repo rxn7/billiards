@@ -63,7 +63,6 @@ void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &ligh
     s_Shader.setUniform("u_Color", MathUtils::colorToGlslVec3(m_Color));
     s_Shader.setUniform("u_Number", m_Number);
     s_Shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
-    s_Shader.setUniform("u_Position", m_Position);
 
     sf::Transform transform;
     transform.translate(m_Position);
