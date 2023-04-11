@@ -42,11 +42,10 @@ Game::~Game() {
 
 void Game::start() {
     sf::Clock frameClock;
-    sf::Event event;
-    PerformanceStats performanceStats;
     while(m_Window.isOpen()) {
         m_FrameTime = frameClock.restart();
 
+        sf::Event event;
         while(m_Window.pollEvent(event)) {
             m_ImGuiLayer.handleEvent(event);
             handleEvent(event);
@@ -56,7 +55,7 @@ void Game::start() {
 
         m_Window.clear();
 
-        render(performanceStats);
+        render();
 
         m_Window.display();
     }
@@ -65,7 +64,10 @@ void Game::start() {
 void Game::update() {
     float dt = m_FrameTime.asSeconds();
 
+    sf::Clock physicsUpdateTimeClock;
     Physics::update(m_Balls, m_Table);
+    m_PerfStats.physicsUpdateTime = physicsUpdateTimeClock.getElapsedTime();
+
     for(Ball &ball : m_Balls)
         ball.update(dt);
     mp_Cue->update(dt);
@@ -73,19 +75,18 @@ void Game::update() {
     m_ImGuiLayer.update(m_FrameTime);
 }
 
-void Game::render(PerformanceStats &stats) {
-    stats.frameTimeMs = m_FrameTime.asMilliseconds() * 0.001f;
-    stats.fps = 1.0f / m_FrameTime.asSeconds();
+void Game::render() {
+    m_PerfStats.frameTimeMs = m_FrameTime.asMicroseconds() * 0.001f;
+    m_PerfStats.fps = 1.0f / m_FrameTime.asSeconds();
 
     if(m_Options.cameraFollowCueBall)
         m_View.setCenter(mp_CueBall->m_Position);
 
     m_Window.setView(m_View);
 
-    sf::Clock renderTimeClock;
     m_Table.render(m_Window);
-    stats.tableRenderTime = renderTimeClock.restart();
 
+    sf::Clock ballsRenderTimeClock;
     Ball::s_Shader.setUniform("u_LightPosition", m_LightProps.lightPosition);
     Ball::s_Shader.setUniform("u_LightColor", m_LightProps.lightColor);
     Ball::s_Shader.setUniform("u_AmbientIntensity", m_LightProps.ambientIntensity);
@@ -94,22 +95,20 @@ void Game::render(PerformanceStats &stats) {
     Ball::s_Shader.setUniform("u_Shininess", m_LightProps.shininess);
     for(const Ball &ball : m_Balls)
         ball.render(m_Window);
-
-    stats.ballsRenderTime = renderTimeClock.restart();
+    m_PerfStats.ballsRenderTime = ballsRenderTimeClock.getElapsedTime();
 
     mp_Cue->render(m_Window);
-    stats.cueRenderTime = renderTimeClock.restart();
 
     if(m_Options.renderBallVelocity)
         for(const Ball &ball : m_Balls)
             ball.renderDebug(m_Window);
 
+    sf::Clock debugRenderTimeClock;
     if(m_Options.renderPocket)
         Pocket::renderDebug(m_Window);
+    m_PerfStats.debugRenderTime = debugRenderTimeClock.getElapsedTime();
 
-    stats.debugRenderTime = renderTimeClock.restart();
-
-    m_ImGuiLayer.render(stats);
+    m_ImGuiLayer.render(m_PerfStats);
 }
 
 void Game::rackBalls() {

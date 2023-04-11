@@ -6,8 +6,7 @@
 struct PerformanceStats {
     float frameTimeMs;
     std::uint32_t fps;
+    sf::Time physicsUpdateTime;
     sf::Time ballsRenderTime;
-    sf::Time tableRenderTime;
     sf::Time debugRenderTime;
-    sf::Time cueRenderTime;
 };

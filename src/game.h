@@ -22,7 +22,7 @@ public:
 
 private:
     void update();
-    void render(PerformanceStats &stats);
+    void render();
     void rackBalls();
     void resize(const unsigned int width, const unsigned int height);
     void handleEvent(const sf::Event &event);
@@ -36,6 +36,8 @@ private:
 
     friend ImGuiLayer;
     LightingProperties m_LightProps;
+
+    PerformanceStats m_PerfStats;
 
     Ball *mp_CueBall;
     Table m_Table;

@@ -22,12 +22,12 @@ void ImGuiLayer::update(const sf::Time &frameTime) const {
 
 void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
     ImGui::Begin("Debug");
-    if(ImGui::TreeNode("Render stats")) {
+    if(ImGui::TreeNode("Performance")) {
         ImGui::Text("FPS: %i", performanceStats.fps);
         ImGui::Text("Frame time: %.10f ms", performanceStats.frameTimeMs);
+        ImGui::Text("Physics update time: %.10f ms", performanceStats.physicsUpdateTime.asMicroseconds() * 0.001f);
+
         ImGui::Text("Balls render time: %.10f ms", performanceStats.ballsRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Table render time: %.10f ms", performanceStats.tableRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Cue render time: %.10f ms", performanceStats.cueRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Debug render time: %.10f ms", performanceStats.debugRenderTime.asMicroseconds() * 0.001f);
         ImGui::TreePop();
     }
