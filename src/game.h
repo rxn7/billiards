@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "imGuiLayer.h"
 #include "ball.h"
 #include "cue.h"
 #include "gameOptions.h"
@@ -22,13 +23,18 @@ public:
 private:
     void update();
     void render(RenderStats &stats);
-    void imgui(const RenderStats &stats);
     void rackBalls();
     void resize(const unsigned int width, const unsigned int height);
     void handleEvent(const sf::Event &event);
 
+public:
+    sf::RenderWindow m_Window;
+
 private:
+    friend ImGuiLayer;
     GameOptions m_Options;
+
+    friend ImGuiLayer;
     LightingProperties m_LightProps;
 
     Ball *mp_CueBall;
@@ -36,7 +42,8 @@ private:
     std::vector<Ball> m_Balls;
     std::unique_ptr<Cue> mp_Cue;
 
-    sf::RenderWindow m_Window;
+    ImGuiLayer m_ImGuiLayer;
+
     sf::View m_View;
     sf::Time m_FrameTime;
 };

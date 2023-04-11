@@ -9,6 +9,8 @@
 #include <SFML/Graphics/Glsl.hpp>
 
 namespace MathUtils {
+    constexpr float BYTE_TO_FLOAT_COLOR = 1.0f / 255.0f;
+
     inline float lengthSqr(const sf::Vector2f &v) {
         return v.x*v.x + v.y*v.y;
     }
@@ -37,10 +39,7 @@ namespace MathUtils {
         );
     }
 
-    sf::Transform rotationMatrix(const sf::Vector3f &axis, float angle);
-
     inline sf::Glsl::Vec3 colorToGlslVec3(const sf::Color &color) {
-        constexpr float byteToFloatColor = 1.0f / 255.0f;
-        return sf::Glsl::Vec3(color.r * byteToFloatColor, color.g * byteToFloatColor, color.b * byteToFloatColor);
+        return sf::Glsl::Vec3(color.r * BYTE_TO_FLOAT_COLOR, color.g * BYTE_TO_FLOAT_COLOR, color.b * BYTE_TO_FLOAT_COLOR);
     }
 }

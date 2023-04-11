@@ -6,13 +6,10 @@
 
 #include <SFML/Window/WindowStyle.hpp>
 
-#include <imgui.h>
-#include <imgui-SFML.h>
-
 #include <iostream>
 #include <pthread.h>
 
-Game::Game() {
+Game::Game() : m_ImGuiLayer(*this) {
     if(!sf::Shader::isAvailable()) {
         std::cerr << "ERROR: Your graphics card doesn't support GLSL shaders.\n";
         std::exit(EXIT_FAILURE);
@@ -22,7 +19,6 @@ Game::Game() {
     m_Window.create(sf::VideoMode(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT), "Billiards by rxn7", sf::Style::Default);
     m_Window.setVerticalSyncEnabled(true);
 
-    ImGui::SFML::Init(m_Window);
     Random::init();
     Audio::init();
     Ball::init();
@@ -42,7 +38,6 @@ Game::Game() {
 }
 
 Game::~Game() {
-    ImGui::SFML::Shutdown();
 }
 
 void Game::start() {
@@ -53,7 +48,7 @@ void Game::start() {
         m_FrameTime = frameClock.restart();
 
         while(m_Window.pollEvent(event)) {
-            ImGui::SFML::ProcessEvent(m_Window, event);
+            m_ImGuiLayer.handleEvent(event);
             handleEvent(event);
         }
 
@@ -62,8 +57,6 @@ void Game::start() {
         m_Window.clear();
 
         render(renderStats);
-        imgui(renderStats);
-        ImGui::SFML::Render(m_Window);
 
         m_Window.display();
     }
@@ -72,15 +65,12 @@ void Game::start() {
 void Game::update() {
     float dt = m_FrameTime.asSeconds();
 
-    ImGui::SFML::Update(m_Window, m_FrameTime);
     Physics::update(m_Balls, m_Table);
-
     for(Ball &ball : m_Balls)
         ball.update(dt);
-
     mp_Cue->update(dt);
 
-    const sf::Vector2f mousePosition = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window), m_View);
+    m_ImGuiLayer.update(m_FrameTime);
 }
 
 void Game::render(RenderStats &stats) {
@@ -118,43 +108,8 @@ void Game::render(RenderStats &stats) {
         Pocket::renderDebug(m_Window);
 
     stats.debugRenderTime = renderTimeClock.restart();
-}
 
-void Game::imgui(const RenderStats &renderStats) {
-    ImGui::Begin("Debug");
-    if(ImGui::TreeNode("Render stats")) {
-        ImGui::Text("FPS: %i", renderStats.fps);
-        ImGui::Text("Frame time: %.10f ms", renderStats.frameTimeMs);
-        ImGui::Text("Balls render time: %.10f ms", renderStats.ballsRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Table render time: %.10f ms", renderStats.tableRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Cue render time: %.10f ms", renderStats.cueRenderTime.asMicroseconds() * 0.001f);
-        ImGui::Text("Debug render time: %.10f ms", renderStats.debugRenderTime.asMicroseconds() * 0.001f);
-        ImGui::TreePop();
-    }
-
-    if(ImGui::TreeNode("Options")) {
-        if(ImGui::TreeNode("Lighting")) {
-            ImGui::SliderFloat3("Light position", reinterpret_cast<float*>(&m_LightProps.lightPosition), -1000.0f, 1000.0f);
-            ImGui::SliderFloat3("Light color", reinterpret_cast<float*>(&m_LightProps.lightColor), 0.0f, 1.0f);
-            ImGui::SliderFloat("Ambient intensity", &m_LightProps.ambientIntensity, 0.0f, 1.0f);
-            ImGui::SliderFloat("Diffuse intensity", &m_LightProps.diffuseIntensity, 0.0f, 1.0f);
-            ImGui::SliderFloat("Specular intensity", &m_LightProps.specularIntensity, 0.0f, 1.0f);
-            ImGui::SliderFloat("Shininess", &m_LightProps.shininess, 0.0f, 100.0f);
-            ImGui::TreePop();
-        }
-
-        if(ImGui::Checkbox("VSync", &m_Options.vsync))
-            m_Window.setVerticalSyncEnabled(m_Options.vsync);
-
-        ImGui::Checkbox("Draw pockets", &m_Options.renderPocket);
-        ImGui::Checkbox("Draw ball's velocity", &m_Options.renderBallVelocity);
-        if(ImGui::Checkbox("Camera follow cue ball", &m_Options.cameraFollowCueBall) && !m_Options.cameraFollowCueBall)
-            m_View.setCenter(0,0);
-
-        ImGui::TreePop();
-    }
-
-    ImGui::End();
+    m_ImGuiLayer.render(stats);
 }
 
 void Game::rackBalls() {
