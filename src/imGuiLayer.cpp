@@ -48,7 +48,6 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
 
         ImGui::Checkbox("Draw pockets", &m_Game.m_Options.renderPocket);
         ImGui::Checkbox("Draw ball's velocity", &m_Game.m_Options.renderBallVelocity);
-        ImGui::Checkbox("Draw cue's direction", &m_Game.m_Options.renderCueDirection);
         if(ImGui::Checkbox("Camera follow cue ball", &m_Game.m_Options.cameraFollowCueBall) && !m_Game.m_Options.cameraFollowCueBall)
             m_Game.m_View.setCenter(0,0);
 
