@@ -31,8 +31,7 @@ void Pocket::init(const Table &table) {
 bool Pocket::isBallInsideAny(const Ball &ball) {
     for(const sf::Vector2f &pocket : pockets) {
         const float distanceSqr = MathUtils::lengthSqr(ball.m_Position - pocket);
-        const float radiusTotal = RADIUS;
-        if(distanceSqr <= radiusTotal * radiusTotal)
+        if(distanceSqr <= RADIUS * RADIUS)
             return true;
     }
 
