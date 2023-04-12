@@ -45,6 +45,7 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
             ImGui::SliderFloat("Diffuse intensity", &m_Game.m_LightProps.diffuseIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Specular intensity", &m_Game.m_LightProps.specularIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Shininess", &m_Game.m_LightProps.shininess, 0.0f, 100.0f);
+            ImGui::Checkbox("Shadows (slow)", &m_Game.m_LightProps.shadowsEnabled);
 
             if(ImGui::Button("Reset"))
                 m_Game.m_LightProps = {};

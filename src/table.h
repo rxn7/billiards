@@ -15,6 +15,7 @@ struct LightingProperties;
 class Table {
 public:
     Table(const sf::Vector2f &size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, const sf::Color &color = {0, 98, 162});
+    static void init();
 
     void render(sf::RenderTarget &renderTarget, const std::vector<Ball> &balls, const LightingProperties &lightProps) const;
     std::pair<bool, sf::Vector2f> isBallOverlapping(const Ball &ball) const;
@@ -32,5 +33,5 @@ private:
     sf::Color m_Color;
     sf::Sprite m_Sprite;
     sf::Texture m_Texture;
-    static sf::Shader s_Shader;
+    static sf::Shader s_SimpleShader, s_AdvancedShader;
 };

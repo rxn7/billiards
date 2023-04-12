@@ -27,6 +27,7 @@ Game::Game() : m_ImGuiLayer(*this) {
     Random::init();
     Audio::init();
     Ball::init();
+    Table::init();
     Pocket::init(m_Table);
 
     m_View.setCenter(0.0f, 0.0f);
