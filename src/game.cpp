@@ -17,9 +17,7 @@ Game::Game() : m_ImGuiLayer(*this) {
         return;
     }
 
-    const sf::ContextSettings ctxSettings(0, 0, 16);
-
-    m_Window.create(sf::VideoMode(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT), "Billiards by rxn7", sf::Style::Default, ctxSettings);
+    m_Window.create(sf::VideoMode(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT), "Billiards by rxn7", sf::Style::Default);
     m_Window.setVerticalSyncEnabled(true);
 
     m_Window.setActive(true);
