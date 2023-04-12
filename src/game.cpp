@@ -67,7 +67,12 @@ void Game::start() {
 }
 
 void Game::update() {
-    float dt = m_FrameTime.asSeconds();
+    const float dt = m_FrameTime.asSeconds();
+
+    if(m_Options.lightFollowMouse) {
+        const sf::Vector2f mousePosition = m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window), m_View);
+        m_LightProps.lightPosition = sf::Glsl::Vec3(mousePosition.x, mousePosition.y, m_LightProps.lightPosition.z);
+    }
 
     sf::Clock physicsUpdateTimeClock;
     Physics::update(m_Balls, m_Table);

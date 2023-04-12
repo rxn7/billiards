@@ -9,13 +9,8 @@
 sf::Shader Table::s_Shader;
 
 Table::Table(const sf::Vector2f &size, const sf::Color &color) : m_Size(size), m_Color(color) {
-    const char *fragShader = {
-        #include "../shaders_out/table.frag.glsl"
-    };
-
-    assert(s_Shader.loadFromMemory(fragShader, sf::Shader::Fragment));
-    s_Shader.setUniform("u_BallRadius", Ball::RADIUS);
-
+    assert(s_Shader.loadFromFile("assets/shaders/table.frag.glsl", sf::Shader::Fragment));
+    s_Shader.setUniform("u_BallRadiusSqr", Ball::RADIUS * Ball::RADIUS);
     assert(m_Texture.loadFromFile("assets/textures/table.png"));
 
     const sf::Vector2f textureSize(m_Texture.getSize());

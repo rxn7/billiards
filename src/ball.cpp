@@ -122,11 +122,7 @@ const sf::Color &Ball::getColor(int number) {
 } 
 
 void Ball::init() {
-    const char *fragShader = {
-        #include "../shaders_out/ball.frag.glsl"
-    };
-
-    assert(s_Shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
+    assert(s_Shader.loadFromFile("assets/shaders/ball.frag.glsl", sf::Shader::Type::Fragment));
     assert(numbersTexture.loadFromFile("assets/textures/numbers.gif"));
     s_Shader.setUniform("u_NumbersTexture", numbersTexture);
 
