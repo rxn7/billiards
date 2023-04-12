@@ -26,18 +26,17 @@ void ImGuiLayer::update(const sf::Time &frameTime) const {
 }
 
 void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
-    ImGui::Begin("Debug");
-    if(ImGui::TreeNode("Performance")) {
+    if(ImGui::Begin("Performance")) {
         ImGui::Text("FPS: %i", performanceStats.fps);
         ImGui::Text("Frame time: %.10f ms", performanceStats.frameTimeMs);
         ImGui::Text("Physics update time: %.10f ms", performanceStats.physicsUpdateTime.asMicroseconds() * 0.001f);
 
         ImGui::Text("Balls render time: %.10f ms", performanceStats.ballsRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Debug render time: %.10f ms", performanceStats.debugRenderTime.asMicroseconds() * 0.001f);
-        ImGui::TreePop();
+        ImGui::End();
     }
 
-    if(ImGui::TreeNode("Options")) {
+    if(ImGui::Begin("Options")) {
         if(ImGui::TreeNode("Lighting")) {
             ImGui::SliderFloat3("Light position", reinterpret_cast<float*>(&m_Game.m_LightProps.lightPosition), -1000.0f, 1000.0f);
             ImGui::SliderFloat3("Light color", reinterpret_cast<float*>(&m_Game.m_LightProps.lightColor), 0.0f, 1.0f);
@@ -66,10 +65,9 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
         if(ImGui::Checkbox("Camera follow cue ball", &m_Game.m_Options.cameraFollowCueBall) && !m_Game.m_Options.cameraFollowCueBall)
             m_Game.m_View.setCenter(0,0);
 
-        ImGui::TreePop();
+        ImGui::End();
     }
-
-    ImGui::End();
+    
     ImGui::SFML::Render(m_Game.m_Window);
 }
 #else
