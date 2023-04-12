@@ -10,7 +10,7 @@ SRC += $(wildcard *.cpp */*.cpp */*/*.cpp */*/*/*.cpp)
 SRC += $(wildcard vendor/*.cpp vendor/*/*.cpp vendor/*/*/*.cpp)
 OBJ += $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC))
 
-ifeq ($(TARGET), "debug")
+ifeq ($(TARGET), debug)
 	CFLAGS += "-DDEBUG"
 	CFLAGS += "-g3"
 else
@@ -24,11 +24,11 @@ compile: $(OBJ) $(OUT)
 $(OBJ_DIR)/%.o: %.cpp
 	@echo "Building $@"
 	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
 	@mkdir -p $(@D)
-	@$(CC) $(OBJ) $(LDFLAGS) -o $@
+	$(CC) $(OBJ) $(LDFLAGS) -o $@
 
 create_dirs:
 	@echo "Creating directories..."

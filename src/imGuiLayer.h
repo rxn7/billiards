@@ -4,6 +4,10 @@
 #include <SFML/System/Time.hpp>
 #include <SFML/Window/Event.hpp>
 
+#ifndef DEBUG
+#define NO_IMGUI
+#endif
+
 class Game;
 
 class ImGuiLayer {

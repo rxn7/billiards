@@ -6,19 +6,17 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include "lightingProperties.h"
 #include "windowProperties.h"
 
-namespace TableColors {
-    const sf::Color TOURNAMENT_BLUE = {0, 98, 162};
-}
-
 struct Ball;
+struct LightingProperties;
 
 class Table {
 public:
-    Table(const sf::Vector2f &size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, const sf::Color &color = TableColors::TOURNAMENT_BLUE);
+    Table(const sf::Vector2f &size = {DEFAULT_WIDTH, DEFAULT_HEIGHT}, const sf::Color &color = {0, 98, 162});
 
-    void render(sf::RenderTarget &renderTarget) const;
+    void render(sf::RenderTarget &renderTarget, const std::vector<Ball> &balls, const LightingProperties &lightProps) const;
     std::pair<bool, sf::Vector2f> isBallOverlapping(const Ball &ball) const;
 
     inline float getMargin() const { return TEXTURE_MARGIN * m_Sprite.getScale().x; }
@@ -34,4 +32,5 @@ private:
     sf::Color m_Color;
     sf::Sprite m_Sprite;
     sf::Texture m_Texture;
+    static sf::Shader s_Shader;
 };

@@ -1,9 +1,21 @@
 #include "table.h"
 #include "ball.h"
+#include "lightingProperties.h"
 #include "mathUtils.h"
+
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Shader.hpp>
+
+sf::Shader Table::s_Shader;
 
 Table::Table(const sf::Vector2f &size, const sf::Color &color) : m_Size(size), m_Color(color) {
+    const char *fragShader = {
+        #include "../shaders_out/table.frag.glsl"
+    };
+
+    assert(s_Shader.loadFromMemory(fragShader, sf::Shader::Fragment));
+    s_Shader.setUniform("u_BallRadius", Ball::RADIUS);
+
     assert(m_Texture.loadFromFile("assets/textures/table.png"));
 
     const sf::Vector2f textureSize(m_Texture.getSize());
@@ -14,8 +26,21 @@ Table::Table(const sf::Vector2f &size, const sf::Color &color) : m_Size(size), m
     m_Sprite.setPosition(-size * 0.5f);
 }
 
-void Table::render(sf::RenderTarget &renderTarget) const {
-    renderTarget.draw(m_Sprite);
+void Table::render(sf::RenderTarget &renderTarget, const std::vector<Ball> &balls, const LightingProperties &lightProps) const {
+    sf::Glsl::Vec2 ballsPositions[16];
+    std::uint8_t idx = 0;
+    for(const Ball &ball : balls)
+        if(!ball.m_InPocket)
+            ballsPositions[idx++] = ball.m_Position;
+
+    s_Shader.setUniform("u_LightPosition", lightProps.lightPosition);
+    s_Shader.setUniform("u_LightColor", lightProps.lightColor);
+    s_Shader.setUniform("u_DiffuseIntensity", lightProps.diffuseIntensity);
+    s_Shader.setUniform("u_BallCount", idx);
+    s_Shader.setUniform("u_Size", m_Size);
+    s_Shader.setUniformArray("u_BallPositions", ballsPositions, 16);
+
+    renderTarget.draw(m_Sprite, &s_Shader);
 }
 
 std::pair<bool, sf::Vector2f> Table::isBallOverlapping(const Ball &ball) const {

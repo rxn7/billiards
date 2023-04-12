@@ -4,6 +4,7 @@
 #include "audio.h"
 #include "pocket.h"
 
+#include <SFML/Window/ContextSettings.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 
 #include <iostream>
@@ -16,8 +17,12 @@ Game::Game() : m_ImGuiLayer(*this) {
         return;
     }
 
-    m_Window.create(sf::VideoMode(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT), "Billiards by rxn7", sf::Style::Default);
+    const sf::ContextSettings ctxSettings(0, 0, 16);
+
+    m_Window.create(sf::VideoMode(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT), "Billiards by rxn7", sf::Style::Default, ctxSettings);
     m_Window.setVerticalSyncEnabled(true);
+
+    m_Window.setActive(true);
 
     Random::init();
     Audio::init();
@@ -84,7 +89,7 @@ void Game::render() {
 
     m_Window.setView(m_View);
 
-    m_Table.render(m_Window);
+    m_Table.render(m_Window, m_Balls, m_LightProps);
 
     sf::Clock ballsRenderTimeClock;
     Ball::s_Shader.setUniform("u_LightColor", m_LightProps.lightColor);
