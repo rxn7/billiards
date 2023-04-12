@@ -17,7 +17,7 @@ void main() {
   vec3 lightDirection = normalize(deltaToLight);
   float distanceToLight = length(deltaToLight);
 
-  float brightness = clamp(dot(lightDirection, vec3(0.0, 0.0, 1.0)), 0.0, 1.0) * clamp(distanceToLight / u_LightPosition.z, 0.0, 1.0) + u_AmbientIntensity;
+  float diffuse = clamp(dot(lightDirection, vec3(0.0, 0.0, 1.0)), 0.0, 1.0) * clamp(distanceToLight / u_LightPosition.z, 0.0, 1.0) * u_DiffuseIntensity;
 
-  gl_FragColor = texture2D(u_Texture, gl_TexCoord[0].xy) * vec4(u_LightColor.xyz, 1.0f) * brightness;
+  gl_FragColor = texture2D(u_Texture, gl_TexCoord[0].xy) * vec4(u_LightColor.xyz, 1.0f) * (diffuse + u_AmbientIntensity);
 }
