@@ -2,7 +2,6 @@
 
 uniform vec3 u_LightPosition;
 uniform vec3 u_LightColor;
-uniform float u_LightRadius;
 uniform float u_DiffuseIntensity;
 uniform float u_AmbientIntensity;
 uniform vec2 u_Size;
