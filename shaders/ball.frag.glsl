@@ -76,7 +76,7 @@ void main() {
   vec3 normal = vec3(uv, sqrt(1.0 - clamp(dot(uv, uv), 0.0, 1.0)));
 
   float diffuse = u_DiffuseIntensity * max(dot(normal, u_LightToBallDirection), 0.0);
-  float specular = u_SpecularIntensity * pow(max(dot(vec3(u_CameraToBallDirection, 0), reflect(-u_LightToBallDirection, normal)), 0.0), u_Shininess);
+  float specular = u_SpecularIntensity * pow(max(dot(u_LightToBallDirection, reflect(-u_LightToBallDirection, normal)), 0.0), u_Shininess);
 
   vec3 color = getColorAtPoint(normal * u_RotationMatrix) * u_LightColor * (u_AmbientIntensity + diffuse) + white * specular;
 

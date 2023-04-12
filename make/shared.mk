@@ -18,7 +18,7 @@ else
 	CFLAGS += "-O3"
 endif
 
-setup: validate_shaders compile_shaders create_dirs copy_assets
+setup: validate_shaders create_dirs copy_assets
 compile: $(OBJ) $(OUT)
 
 $(OBJ_DIR)/%.o: %.cpp
@@ -38,13 +38,10 @@ validate_shaders:
 	@echo "Validating shaders..."
 	@glslangValidator shaders/*
 
-compile_shaders:
-	@echo "Compiling shaders..."
-	@./scripts/compile_shaders.sh
-
 copy_assets:
 	@echo "Copying assets..."
 	@cp -r assets $(BIN_DIR)/
+	@cp shaders/ $(BIN_DIR)/assets/ -r
 
 clean:
 	rm -rf obj bin shaders_out

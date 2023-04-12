@@ -1,9 +1,11 @@
 #include "game.h"
 #include "imGuiLayer.h"
+#include <SFML/Graphics/Glsl.hpp>
 
 #ifndef NO_IMGUI
 #include <imgui.h>
 #include <imgui-SFML.h>
+#include "table.h"
 #endif
 
 #ifndef NO_IMGUI
@@ -43,6 +45,7 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
             ImGui::SliderFloat("Diffuse intensity", &m_Game.m_LightProps.diffuseIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Specular intensity", &m_Game.m_LightProps.specularIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Shininess", &m_Game.m_LightProps.shininess, 0.0f, 100.0f);
+            ImGui::Checkbox("Shadows (slow)", &m_Game.m_LightProps.shadowsEnabled);
 
             if(ImGui::Button("Reset"))
                 m_Game.m_LightProps = {};
@@ -55,6 +58,11 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
 
         ImGui::Checkbox("Draw pockets", &m_Game.m_Options.renderPocket);
         ImGui::Checkbox("Draw ball's velocity", &m_Game.m_Options.renderBallVelocity);
+
+        if(ImGui::Checkbox("Light follow cursor", &m_Game.m_Options.lightFollowMouse) && !m_Game.m_Options.lightFollowMouse) {
+            m_Game.m_LightProps.lightPosition = sf::Glsl::Vec3(0,0,400);
+        }
+
         if(ImGui::Checkbox("Camera follow cue ball", &m_Game.m_Options.cameraFollowCueBall) && !m_Game.m_Options.cameraFollowCueBall)
             m_Game.m_View.setCenter(0,0);
 

@@ -9,5 +9,6 @@ struct LightingProperties {
     float diffuseIntensity = 0.8f;
     float specularIntensity = 0.3f;
     float shininess = 30.0f;
+    bool shadowsEnabled = false;
 };
 

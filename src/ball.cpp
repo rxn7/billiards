@@ -61,8 +61,6 @@ void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &ligh
     const sf::Glsl::Vec3 deltaToLight = lightProps.lightPosition - sf::Vector3f(m_Position.x, m_Position.y, 0.0f);
 
     s_Shader.setUniform("u_LightToBallDirection", MathUtils::normalized(deltaToLight));
-    s_Shader.setUniform("u_CameraToBallDirection", MathUtils::normalized(renderTarget.getView().getCenter() - m_Position));
-    s_Shader.setUniform("u_DistanceToLight", MathUtils::length(deltaToLight));
     s_Shader.setUniform("u_Color", MathUtils::colorToGlslVec3(m_Color));
     s_Shader.setUniform("u_Number", m_Number);
     s_Shader.setUniform("u_RotationMatrix", sf::Glsl::Mat3(glm::value_ptr(glm::mat3_cast(m_Rotation))));
@@ -122,11 +120,7 @@ const sf::Color &Ball::getColor(int number) {
 } 
 
 void Ball::init() {
-    const char *fragShader = {
-        #include "../shaders_out/ball.frag.glsl"
-    };
-
-    assert(s_Shader.loadFromMemory(fragShader, sf::Shader::Type::Fragment));
+    assert(s_Shader.loadFromFile("assets/shaders/ball.frag.glsl", sf::Shader::Type::Fragment));
     assert(numbersTexture.loadFromFile("assets/textures/numbers.gif"));
     s_Shader.setUniform("u_NumbersTexture", numbersTexture);
 
