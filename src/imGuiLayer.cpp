@@ -39,11 +39,14 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
         if(ImGui::TreeNode("Lighting")) {
             ImGui::SliderFloat3("Light position", reinterpret_cast<float*>(&m_Game.m_LightProps.lightPosition), -1000.0f, 1000.0f);
             ImGui::SliderFloat3("Light color", reinterpret_cast<float*>(&m_Game.m_LightProps.lightColor), 0.0f, 1.0f);
-            ImGui::SliderFloat("Light radius", &m_Game.m_LightProps.lightRadius, 0.0f, 100.0f);
             ImGui::SliderFloat("Ambient intensity", &m_Game.m_LightProps.ambientIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Diffuse intensity", &m_Game.m_LightProps.diffuseIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Specular intensity", &m_Game.m_LightProps.specularIntensity, 0.0f, 1.0f);
             ImGui::SliderFloat("Shininess", &m_Game.m_LightProps.shininess, 0.0f, 100.0f);
+
+            if(ImGui::Button("Reset"))
+                m_Game.m_LightProps = {};
+
             ImGui::TreePop();
         }
 

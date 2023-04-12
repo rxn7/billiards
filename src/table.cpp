@@ -36,6 +36,7 @@ void Table::render(sf::RenderTarget &renderTarget, const std::vector<Ball> &ball
     s_Shader.setUniform("u_LightPosition", lightProps.lightPosition);
     s_Shader.setUniform("u_LightColor", lightProps.lightColor);
     s_Shader.setUniform("u_DiffuseIntensity", lightProps.diffuseIntensity);
+    s_Shader.setUniform("u_AmbientIntensity", lightProps.ambientIntensity);
     s_Shader.setUniform("u_BallCount", idx);
     s_Shader.setUniform("u_Size", m_Size);
     s_Shader.setUniformArray("u_BallPositions", ballsPositions, 16);
