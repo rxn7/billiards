@@ -4,7 +4,6 @@ This is a game of billiards (pool) written in C++ using SFML for rendering and e
 # Build dependencies
 - SFML (2.5)
 - GLM
-- ImGUI
 - ImGUI-SFML
 - glslang (to validate the shaders during build)
 
