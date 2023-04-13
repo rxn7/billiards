@@ -33,8 +33,8 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
 
         ImGui::Text("Balls render time: %.10f ms", performanceStats.ballsRenderTime.asMicroseconds() * 0.001f);
         ImGui::Text("Debug render time: %.10f ms", performanceStats.debugRenderTime.asMicroseconds() * 0.001f);
-        ImGui::End();
     }
+    ImGui::End();
 
     if(ImGui::Begin("Options")) {
         if(ImGui::TreeNode("Lighting")) {
@@ -64,9 +64,8 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
 
         if(ImGui::Checkbox("Camera follow cue ball", &m_Game.m_Options.cameraFollowCueBall) && !m_Game.m_Options.cameraFollowCueBall)
             m_Game.m_View.setCenter(0,0);
-
-        ImGui::End();
     }
+    ImGui::End();
     
     ImGui::SFML::Render(m_Game.m_Window);
 }
