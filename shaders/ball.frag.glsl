@@ -67,7 +67,7 @@ vec3 getColorAtPoint(vec3 point) {
 
 void main() {
   float dist = distance(center, gl_TexCoord[0].xy) * 2.0;
-  float alpha = dist > 0.99 ? 1.0 - smoothstep(0.99, 1.0, dist) : 1.0;
+  float alpha = 1.0 - smoothstep(0.99, 1.0, dist);
 
   if(alpha == 0.0f)
     return;

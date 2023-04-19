@@ -11,14 +11,14 @@
 class Game;
 
 class ImGuiLayer {
-public:
-    ImGuiLayer(Game &game);
-    ~ImGuiLayer();
+  public:
+	ImGuiLayer(Game &game);
+	~ImGuiLayer();
 
-    void handleEvent(const sf::Event &event) const;
-    void update(const sf::Time &frameTime) const;
-    void render(const PerformanceStats &performanceStats) const;
+	void handleEvent(const sf::Event &event) const;
+	void update(const sf::Time &frameTime) const;
+	void render(const PerformanceStats &performanceStats) const;
 
-private:
-    Game &m_Game;
+  private:
+	Game &m_Game;
 };

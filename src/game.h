@@ -1,51 +1,50 @@
 #pragma once
 
-#include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include <memory>
 
-#include "imGuiLayer.h"
 #include "ball.h"
 #include "cue.h"
 #include "gameOptions.h"
+#include "imGuiLayer.h"
 #include "lightingProperties.h"
-#include "gameOptions.h"
 #include "performanceStats.h"
 
 class Game {
-public:
-    Game();
-    ~Game();
+  public:
+	Game();
+	~Game();
 
-    void start();
+	void start();
 
-private:
-    void update();
-    void render();
-    void rackBalls();
-    void resize(const unsigned int width, const unsigned int height);
-    void handleEvent(const sf::Event &event);
+  private:
+	void update();
+	void render();
+	void rackBalls();
+	void resize(const unsigned int width, const unsigned int height);
+	void handleEvent(const sf::Event &event);
 
-public:
-    sf::RenderWindow m_Window;
+  public:
+	sf::RenderWindow m_Window;
 
-private:
-    friend ImGuiLayer;
-    GameOptions m_Options;
+  private:
+	friend ImGuiLayer;
+	GameOptions m_Options;
 
-    friend ImGuiLayer;
-    LightingProperties m_LightProps;
+	friend ImGuiLayer;
+	LightingProperties m_LightProps;
 
-    PerformanceStats m_PerfStats;
+	PerformanceStats m_PerfStats;
 
-    Ball *mp_CueBall;
-    Table m_Table;
-    std::vector<Ball> m_Balls;
-    std::unique_ptr<Cue> mp_Cue;
+	Ball *mp_CueBall;
+	Table m_Table;
+	std::vector<Ball> m_Balls;
+	std::unique_ptr<Cue> mp_Cue;
 
-    ImGuiLayer m_ImGuiLayer;
+	ImGuiLayer m_ImGuiLayer;
 
-    sf::View m_View;
-    sf::Time m_FrameTime;
+	sf::View m_View;
+	sf::Time m_FrameTime;
 };

@@ -5,8 +5,8 @@
 struct Ball;
 
 struct Collision {
-    Ball *ball;
-    Ball *target;
+	Ball *ball;
+	Ball *target;
 
-    Collision(Ball *b, Ball *t) : ball(b), target(t) {}
+	Collision(Ball *b, Ball *t) : ball(b), target(t) {}
 };
