@@ -147,6 +147,13 @@ void Game::resize(const unsigned int width, const unsigned int height) {
 	m_View.setSize(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_WIDTH * aspectRatio);
 }
 
+bool Game::allBallsStopped() const {
+	for (const Ball &ball : m_Balls) {
+	}
+
+	return true;
+}
+
 void Game::handleEvent(const sf::Event &event) {
 	switch (event.type) {
 	case sf::Event::Closed:

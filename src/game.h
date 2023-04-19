@@ -18,6 +18,7 @@ class Game {
 	~Game();
 
 	void start();
+	bool allBallsStopped() const;
 
   private:
 	void update();

@@ -30,7 +30,7 @@ class Table {
   public:
 	static constexpr float DEFAULT_WIDTH = WindowProperties::WINDOW_BASE_WIDTH * 0.75f;
 	static constexpr float DEFAULT_HEIGHT = DEFAULT_WIDTH * 0.5f;
-	static constexpr float TEXTURE_MARGIN = 7.0f;
+	static constexpr float TEXTURE_MARGIN = 9.0f;
 
   private:
 	sf::Vector2f m_Size;

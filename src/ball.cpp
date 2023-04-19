@@ -25,11 +25,6 @@ static sf::VertexArray vertexArray(sf::PrimitiveType::Quads, 4);
 static sf::Texture numbersTexture;
 static sf::RectangleShape debugShape;
 
-static const sf::Color BALL_COLORS[] = {
-	sf::Color(255, 255, 255), sf::Color(255, 215, 0), sf::Color(0, 0, 255), sf::Color(255, 0, 0),  sf::Color(128, 0, 128),
-	sf::Color(255, 165, 0),	  sf::Color(34, 139, 34), sf::Color(128, 0, 0), sf::Color(25, 25, 25),
-};
-
 Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
 	assert(number >= 0 && number <= 15);
 	m_Rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -108,13 +103,6 @@ void Ball::pocket() {
 	}
 
 	m_InPocket = true;
-}
-
-const sf::Color &Ball::getColor(int number) {
-	if (number == 0 || number == 8)
-		return BALL_COLORS[number];
-
-	return BALL_COLORS[(number) % 8];
 }
 
 void Ball::init() {
