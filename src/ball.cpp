@@ -39,8 +39,13 @@ void Ball::update(const float dt) {
 	if (m_InPocket)
 		return;
 
-	sf::Vector2f movement = m_Velocity * dt;
 	const float speed = MathUtils::length(m_Velocity);
+	if (speed <= 3) {
+		m_Velocity = {0, 0};
+		return;
+	}
+
+	const sf::Vector2f movement = m_Velocity * dt;
 
 	m_Position += movement;
 	applyDrag(speed, dt);
@@ -78,7 +83,7 @@ void Ball::renderDebug(sf::RenderTarget &renderTarget) const {
 
 void Ball::applyDrag(const float speed, const float dt) {
 	const sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
-	const sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+	sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
 
 	m_Velocity += dragForce * dt;
 }

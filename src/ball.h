@@ -42,7 +42,7 @@ class Ball {
   public:
 	static constexpr float RADIUS = 15.0f;
 	static constexpr float DIAMETER = RADIUS * 2.0f;
-	static constexpr float DRAG_COEFFICIENT = 0.33f;
+	static constexpr float DRAG_COEFFICIENT = 0.40f;
 	static constexpr float MASS = 0.160f;
 
 	static sf::Shader s_Shader;
