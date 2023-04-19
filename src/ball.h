@@ -61,13 +61,13 @@ class Ball {
 	static sf::Shader s_Shader;
 	sf::Vector2f m_Velocity = {0, 0};
 	sf::Vector2f m_Position = {0, 0};
+	glm::quat m_Rotation;
 	float m_Scale = 1.0f;
 	sf::Sound m_Sound;
 	bool m_InPocket = false;
 
   private:
 	float m_Speed;
-	glm::quat m_Rotation;
 	const sf::Color &m_Color;
 	uint8_t m_Number = 8;
 };

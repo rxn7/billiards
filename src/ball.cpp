@@ -1,6 +1,7 @@
 #include "ball.h"
 #include "audio.h"
 #include "collision.h"
+#include "game.h"
 #include "lightingProperties.h"
 #include "mathUtils.h"
 #include <cassert>
@@ -48,9 +49,6 @@ void Ball::update(const float dt) {
 }
 
 void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const {
-	if (m_InPocket)
-		return;
-
 	const sf::Glsl::Vec3 deltaToLight = lightProps.lightPosition - sf::Vector3f(m_Position.x, m_Position.y, 0.0f);
 
 	s_Shader.setUniform("u_LightToBallDirection", MathUtils::normalized(deltaToLight));
@@ -96,12 +94,27 @@ void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float 
 void Ball::pocket() {
 	Audio::play(m_Sound, Audio::AudioType::POCKET);
 
+	m_Rotation = glm::quat();
+
 	if (m_Number == 0) {
+		// TODO:
 		m_Position = sf::Vector2f(0, 0);
 		m_Velocity = sf::Vector2f(0, 0);
 		return;
 	}
 
+	std::uint8_t ballsInPocketCount = 0u;
+	for (const Ball &ball : Game::getInstance().m_Balls)
+		if (ball.m_InPocket)
+			ballsInPocketCount++;
+
+	// clang-format off
+	m_Position = sf::Vector2f(
+		Table::DEFAULT_WIDTH * 0.5f + RADIUS,
+		-Table::DEFAULT_HEIGHT * 0.5f + RADIUS + (DIAMETER * ballsInPocketCount)
+	);
+
+	// clang-format on
 	m_InPocket = true;
 }
 

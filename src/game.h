@@ -17,6 +17,10 @@ class Game {
 	Game();
 	~Game();
 
+	static inline Game &getInstance() {
+		return *s_Instance;
+	}
+
 	void start();
 	bool allBallsStopped() const;
 
@@ -31,17 +35,21 @@ class Game {
 	sf::RenderWindow m_Window;
 
   private:
+	static Game *s_Instance;
+
 	friend ImGuiLayer;
 	GameOptions m_Options;
 
 	friend ImGuiLayer;
 	LightingProperties m_LightProps;
 
+	friend Ball;
+	std::vector<Ball> m_Balls;
+	Ball *mp_CueBall;
+
 	PerformanceStats m_PerfStats;
 
-	Ball *mp_CueBall;
 	Table m_Table;
-	std::vector<Ball> m_Balls;
 	std::unique_ptr<Cue> mp_Cue;
 
 	ImGuiLayer m_ImGuiLayer;

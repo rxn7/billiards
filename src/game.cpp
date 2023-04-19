@@ -10,7 +10,11 @@
 #include <iostream>
 #include <pthread.h>
 
+Game *Game::s_Instance;
+
 Game::Game() : m_ImGuiLayer(*this) {
+	s_Instance = this;
+
 	if (!sf::Shader::isAvailable()) {
 		std::cerr << "ERROR: Your graphics card doesn't support GLSL shaders.\n";
 		std::exit(EXIT_FAILURE);
@@ -124,6 +128,7 @@ void Game::rackBalls() {
 
 	for (Ball &ball : m_Balls) {
 		ball.m_Velocity = {0, 0};
+		ball.m_Rotation = glm::angleAxis(Random::rangeF(0.0f, glm::pi<float>()), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::angleAxis(Random::rangeF(0.0f, glm::pi<float>()), glm::vec3(1.0f, 0.0f, 0.0f));
 		ball.m_InPocket = false;
 	}
 
