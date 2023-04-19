@@ -60,7 +60,7 @@ void Game::start() {
 
 		update();
 
-		m_Window.clear();
+		m_Window.clear(sf::Color(105, 104, 102));
 
 		render();
 
@@ -149,11 +149,15 @@ void Game::resize(const unsigned int width, const unsigned int height) {
 	m_Window.setSize({width, height});
 
 	const float aspectRatio = static_cast<float>(height) / static_cast<float>(width);
-	m_View.setSize(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_WIDTH * aspectRatio);
+
+	const sf::Vector2f size(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_WIDTH * aspectRatio);
+	m_View.setSize(size);
 }
 
 bool Game::allBallsStopped() const {
 	for (const Ball &ball : m_Balls) {
+		if (ball.getSpeed() != 0)
+			return false;
 	}
 
 	return true;
@@ -171,12 +175,14 @@ void Game::handleEvent(const sf::Event &event) {
 	}
 
 	case sf::Event::MouseButtonPressed: {
+		if (!allBallsStopped())
+			break;
+
 		const sf::Vector2f mousePositionWorld(m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)));
 		if (mp_CueBall->isPointOverlapping(mousePositionWorld, Ball::RADIUS * 2))
 			mp_Cue->startAiming();
 		break;
 	}
-
 	case sf::Event::MouseButtonReleased:
 		mp_Cue->hit();
 		break;

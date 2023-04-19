@@ -49,8 +49,8 @@ class Ball {
 	}
 
   private:
-	void applyDrag(const float speed, const float dt);
-	void applyRotation(const float speed, const sf::Vector2f &movement, const float dt);
+	void applyDrag(const float dt);
+	void applyRotation(const sf::Vector2f &movement, const float dt);
 
   public:
 	static constexpr float RADIUS = 15.0f;

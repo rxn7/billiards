@@ -30,5 +30,6 @@ void main() {
     multiplier -= float(intersect(vec3(u_BallPositions[i].xy, 0.0), pixelPosition, directionToLight)) * 0.8;
 
   float diffuse = clamp(dot(directionToLight, vec3(0.0, 0.0, 1.0)), 0.0, 1.0) * clamp(distanceToLight / u_LightPosition.z, 0.0, 1.0) * u_DiffuseIntensity;
-  gl_FragColor = texture2D(u_Texture, gl_TexCoord[0].xy) * vec4(u_LightColor.xyz, 1.0f) * (diffuse + u_AmbientIntensity) * multiplier;
+  vec3 color = texture2D(u_Texture, gl_TexCoord[0].xy).xyz * u_LightColor.xyz * (diffuse + u_AmbientIntensity) * multiplier;
+  gl_FragColor = vec4(color, 1.0);
 }

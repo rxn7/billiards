@@ -32,11 +32,12 @@ Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
 }
 
 void Ball::update(const float dt) {
-	if (m_InPocket)
+	m_Speed = MathUtils::length(m_Velocity);
+
+	if (m_InPocket || m_Speed == 0)
 		return;
 
-	const float speed = MathUtils::length(m_Velocity);
-	if (speed <= 3) {
+	if (m_Speed <= 3) {
 		m_Velocity = {0, 0};
 		return;
 	}
@@ -44,8 +45,8 @@ void Ball::update(const float dt) {
 	const sf::Vector2f movement = m_Velocity * dt;
 
 	m_Position += movement;
-	applyDrag(speed, dt);
-	applyRotation(speed, movement, dt);
+	applyDrag(dt);
+	applyRotation(movement, dt);
 }
 
 void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const {
@@ -74,15 +75,15 @@ void Ball::renderDebug(sf::RenderTarget &renderTarget) const {
 	renderTarget.draw(debugShape);
 }
 
-void Ball::applyDrag(const float speed, const float dt) {
+void Ball::applyDrag(const float dt) {
 	const sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
-	sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * speed;
+	sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * m_Speed;
 
 	m_Velocity += dragForce * dt;
 }
 
-void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float dt) {
-	if (speed == 0.0f)
+void Ball::applyRotation(const sf::Vector2f &movement, float dt) {
+	if (m_Speed == 0.0f)
 		return;
 
 	const glm::quat rotationX = glm::angleAxis(-movement.y / RADIUS, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -93,7 +94,6 @@ void Ball::applyRotation(const float speed, const sf::Vector2f &movement, float 
 
 void Ball::pocket() {
 	Audio::play(m_Sound, Audio::AudioType::POCKET);
-
 	m_Rotation = glm::quat();
 
 	if (m_Number == 0) {
