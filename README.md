@@ -15,7 +15,7 @@ Args:
 - Build release ```-r```  
 
 # Run
-Command: ```./scripts/build.sh```  
+Command: ```./scripts/run.sh```  
 Args:
 - Run linux executable (default): ```-p linux```  
 - Run windows executable (wine): ```-p windows```   
