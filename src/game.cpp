@@ -156,7 +156,7 @@ void Game::resize(const unsigned int width, const unsigned int height) {
 
 bool Game::allBallsStopped() const {
 	for (const Ball &ball : m_Balls) {
-		if (ball.getSpeed() != 0)
+		if (!ball.m_InPocket && ball.getSpeed() != 0)
 			return false;
 	}
 
