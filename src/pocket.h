@@ -11,4 +11,5 @@ namespace Pocket {
 	void init(const Table &table);
 	void renderDebug(sf::RenderTarget &renderTarget);
 	bool isBallInsideAny(const Ball &ball);
+	bool isBallOverlappingAny(const Ball &ball);
 } // namespace Pocket

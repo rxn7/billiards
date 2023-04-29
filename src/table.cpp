@@ -2,6 +2,7 @@
 #include "ball.h"
 #include "lightingProperties.h"
 #include "mathUtils.h"
+#include "pocket.h"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shader.hpp>
@@ -50,9 +51,11 @@ void Table::render(sf::RenderTarget &renderTarget, const std::vector<Ball> &ball
 }
 
 std::pair<bool, sf::Vector2f> Table::isBallOverlapping(const Ball &ball) const {
+	if (Pocket::isBallOverlappingAny(ball))
+		return std::make_pair(false, sf::Vector2f(0, 0));
+
 	bool overlapping = false;
 	sf::Vector2f normal = {0.0f, 0.0f};
-
 	const float margin = getMargin();
 
 	if (ball.m_Position.x - Ball::RADIUS < -m_Size.x * 0.5f + margin) {

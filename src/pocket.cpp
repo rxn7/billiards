@@ -28,6 +28,16 @@ void Pocket::init(const Table &table) {
 	shape.setOrigin(RADIUS, RADIUS);
 }
 
+bool Pocket::isBallOverlappingAny(const Ball &ball) {
+	for (const sf::Vector2f &pocket : pockets) {
+		const float distanceSqr = MathUtils::lengthSqr(ball.m_Position - pocket);
+		if (distanceSqr <= RADIUS * RADIUS + Ball::RADIUS + Ball::RADIUS)
+			return true;
+	}
+
+	return false;
+}
+
 bool Pocket::isBallInsideAny(const Ball &ball) {
 	for (const sf::Vector2f &pocket : pockets) {
 		const float distanceSqr = MathUtils::lengthSqr(ball.m_Position - pocket);
