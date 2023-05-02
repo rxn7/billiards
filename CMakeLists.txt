@@ -14,7 +14,8 @@ set(IMGUI_DIR ${LIB_DIR}/imgui)
 add_compile_options(-O3)
 
 add_subdirectory(${LIB_DIR}/imgui-sfml)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio ImGui-SFML::ImGui-SFML)
+add_subdirectory(${LIB_DIR}/glm)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio ImGui-SFML::ImGui-SFML glm::glm)
 
 add_subdirectory(${LIB_DIR}/sfml)
 
