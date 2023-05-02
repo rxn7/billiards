@@ -1,0 +1,9 @@
+[submodule "vendor/sfml"]
+	path = vendor/sfml
+	url = https://github.com/SFML/SFML
+[submodule "vendor/imgui-sfml"]
+	path = vendor/imgui-sfml
+	url = https://github.com/SFML/imgui-sfml
+[submodule "vendor/imgui"]
+	path = vendor/imgui
+	url = https://github.com/ocornut/imgui

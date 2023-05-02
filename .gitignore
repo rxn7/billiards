@@ -1,5 +1,3 @@
 .cache
-bin
-obj
-shaders_out
+build
 compile_commands.json
