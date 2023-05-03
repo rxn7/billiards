@@ -32,21 +32,13 @@ Ball::Ball(const uint8_t number) : m_Number(number), m_Color(getColor(number)) {
 }
 
 void Ball::update(const float dt) {
-	m_Speed = MathUtils::length(m_Velocity);
+	const float speedSqr = MathUtils::lengthSqr(m_Velocity);
+	m_Stopped = speedSqr == 0;
 
-	if (m_InPocket || m_Speed == 0)
+	if (m_InPocket || m_Stopped)
 		return;
 
-	if (m_Speed <= 3) {
-		m_Velocity = {0, 0};
-		return;
-	}
-
-	const sf::Vector2f movement = m_Velocity * dt;
-
-	m_Position += movement;
-	applyDrag(dt);
-	applyRotation(movement, dt);
+	applyRotation(m_Velocity * dt, dt);
 }
 
 void Ball::render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const {
@@ -77,15 +69,12 @@ void Ball::renderDebug(sf::RenderTarget &renderTarget) const {
 
 void Ball::applyDrag(const float dt) {
 	const sf::Vector2f dragDirection = -MathUtils::normalized(m_Velocity);
-	sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * m_Speed;
+	sf::Vector2f dragForce = dragDirection * DRAG_COEFFICIENT * MathUtils::length(m_Velocity);
 
 	m_Velocity += dragForce * dt;
 }
 
 void Ball::applyRotation(const sf::Vector2f &movement, float dt) {
-	if (m_Speed == 0.0f)
-		return;
-
 	const glm::quat rotationX = glm::angleAxis(-movement.y / RADIUS, glm::vec3(1.0f, 0.0f, 0.0f));
 	const glm::quat rotationY = glm::angleAxis(movement.x / RADIUS, glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -110,8 +99,8 @@ void Ball::pocket() {
 
 	// clang-format off
 	m_Position = sf::Vector2f(
-		Table::DEFAULT_WIDTH * 0.5f + RADIUS,
-		-Table::DEFAULT_HEIGHT * 0.5f + RADIUS + (DIAMETER * ballsInPocketCount)
+		Table::WIDTH * 0.5f + RADIUS,
+		-Table::HEIGHT * 0.5f + RADIUS + (DIAMETER * ballsInPocketCount)
 	);
 
 	// clang-format on

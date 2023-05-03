@@ -7,7 +7,9 @@
 #include <SFML/Window/ContextSettings.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 
+#include <algorithm>
 #include <iostream>
+#include <mutex>
 #include <pthread.h>
 
 Game *Game::s_Instance;
@@ -29,14 +31,13 @@ Game::Game() : m_ImGuiLayer(*this) {
 	Random::init();
 	Audio::init();
 	Ball::init();
-	Table::init();
+	Physics::init(&m_Balls);
 	Pocket::init(m_Table);
 
 	m_View.setCenter(0.0f, 0.0f);
 	resize(WindowProperties::WINDOW_BASE_WIDTH, WindowProperties::WINDOW_BASE_HEIGHT);
 
-	m_Balls.reserve(16);
-	for (int i = 0; i < 16; ++i)
+	for (std::uint8_t i = 0; i < 16u; ++i)
 		m_Balls.emplace_back(i);
 
 	mp_CueBall = &m_Balls.at(0);
@@ -76,12 +77,11 @@ void Game::update() {
 		m_LightProps.lightPosition = sf::Glsl::Vec3(mousePosition.x, mousePosition.y, m_LightProps.lightPosition.z);
 	}
 
-	sf::Clock physicsUpdateTimeClock;
-	Physics::update(m_Balls, m_Table);
-	m_PerfStats.physicsUpdateTime = physicsUpdateTimeClock.getElapsedTime();
+	Physics::update(dt);
 
 	for (Ball &ball : m_Balls)
 		ball.update(dt);
+
 	mp_Cue->update(dt);
 
 	m_ImGuiLayer.update(m_FrameTime);
@@ -104,8 +104,10 @@ void Game::render() {
 	Ball::s_Shader.setUniform("u_DiffuseIntensity", m_LightProps.diffuseIntensity);
 	Ball::s_Shader.setUniform("u_SpecularIntensity", m_LightProps.specularIntensity);
 	Ball::s_Shader.setUniform("u_Shininess", m_LightProps.shininess);
+
 	for (const Ball &ball : m_Balls)
 		ball.render(m_Window, m_LightProps);
+
 	m_PerfStats.ballsRenderTime = ballsRenderTimeClock.getElapsedTime();
 
 	mp_Cue->render(m_Window);
@@ -155,12 +157,7 @@ void Game::resize(const unsigned int width, const unsigned int height) {
 }
 
 bool Game::allBallsStopped() const {
-	for (const Ball &ball : m_Balls) {
-		if (!ball.m_InPocket && ball.getSpeed() != 0)
-			return false;
-	}
-
-	return true;
+	return !std::any_of(m_Balls.begin(), m_Balls.end(), [](const Ball &b) { return !b.hasStopped(); });
 }
 
 void Game::handleEvent(const sf::Event &event) {

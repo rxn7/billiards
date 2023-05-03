@@ -2,8 +2,10 @@
 
 #include "lightingProperties.h"
 #include "mathUtils.h"
-#include "table.h"
+
 #include <glm/gtc/quaternion.hpp>
+#include <glm/vec2.hpp>
+#include <memory>
 #include <SFML/Audio/Sound.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Glsl.hpp>
@@ -26,6 +28,7 @@ class Ball {
 	void render(sf::RenderTarget &renderTarget, const LightingProperties &lightProps) const;
 	void renderDebug(sf::RenderTarget &renderTarget) const;
 	void pocket();
+	void applyDrag(const float dt);
 
 	static const sf::Color &getColor(const int number) {
 		return number == 0 || number == 8 ? BALL_COLORS[number] : BALL_COLORS[(number) % 8];
@@ -44,12 +47,11 @@ class Ball {
 		return m_Number;
 	}
 
-	inline float getSpeed() const {
-		return m_Speed;
+	inline bool hasStopped() const {
+		return m_Stopped || m_InPocket;
 	}
 
   private:
-	void applyDrag(const float dt);
 	void applyRotation(const sf::Vector2f &movement, const float dt);
 
   public:
@@ -59,6 +61,7 @@ class Ball {
 	static constexpr float MASS = 0.160f;
 
 	static sf::Shader s_Shader;
+	bool m_Stopped = false;
 	sf::Vector2f m_Velocity = {0, 0};
 	sf::Vector2f m_Position = {0, 0};
 	glm::quat m_Rotation;
@@ -67,7 +70,6 @@ class Ball {
 	bool m_InPocket = false;
 
   private:
-	float m_Speed;
 	const sf::Color &m_Color;
 	uint8_t m_Number = 8;
 };

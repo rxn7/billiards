@@ -18,9 +18,7 @@ Table::Table(const sf::Vector2f &size, const sf::Color &color) : m_Size(size), m
 	m_Sprite.setTexture(m_Texture, true);
 	m_Sprite.setScale(scale, scale);
 	m_Sprite.setPosition(-size * 0.5f);
-}
 
-void Table::init() {
 	assert(s_AdvancedShader.loadFromFile("assets/shaders/table.frag.glsl", sf::Shader::Fragment));
 	s_AdvancedShader.setUniform("u_BallRadiusSqr", Ball::RADIUS * Ball::RADIUS * 0.98f);
 
@@ -50,7 +48,7 @@ void Table::render(sf::RenderTarget &renderTarget, const std::vector<Ball> &ball
 	renderTarget.draw(m_Sprite, shader);
 }
 
-std::pair<bool, sf::Vector2f> Table::isBallOverlapping(const Ball &ball) const {
+Table::OverlapResult Table::isBallOverlapping(const Ball &ball) const {
 	if (Pocket::isBallOverlappingAny(ball))
 		return std::make_pair(false, sf::Vector2f(0, 0));
 

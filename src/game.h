@@ -4,6 +4,7 @@
 #include <SFML/Window/Event.hpp>
 
 #include <memory>
+#include <vector>
 
 #include "ball.h"
 #include "cue.h"
@@ -11,6 +12,7 @@
 #include "imGuiLayer.h"
 #include "lightingProperties.h"
 #include "performanceStats.h"
+#include "table.h"
 
 class Game {
   public:
@@ -19,6 +21,10 @@ class Game {
 
 	static inline Game &getInstance() {
 		return *s_Instance;
+	}
+
+	inline const Table &getTable() const {
+		return m_Table;
 	}
 
 	void start();
