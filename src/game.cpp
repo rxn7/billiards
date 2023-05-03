@@ -77,7 +77,10 @@ void Game::update() {
 		m_LightProps.lightPosition = sf::Glsl::Vec3(mousePosition.x, mousePosition.y, m_LightProps.lightPosition.z);
 	}
 
+	const sf::Clock physicsUpdateTimeClock;
 	Physics::update(dt);
+	m_PerfStats.physicsUpdateTime = physicsUpdateTimeClock.getElapsedTime();
+
 	m_AllBallsStoped = allBallsStopped();
 
 	if (m_AllBallsStoped && !m_AllBallsStopedLastFrame)
@@ -104,7 +107,7 @@ void Game::render() {
 
 	m_Table.render(m_Window, m_Balls, m_LightProps);
 
-	sf::Clock ballsRenderTimeClock;
+	const sf::Clock ballsRenderTimeClock;
 	Ball::s_Shader.setUniform("u_LightColor", m_LightProps.lightColor);
 	Ball::s_Shader.setUniform("u_AmbientIntensity", m_LightProps.ambientIntensity);
 	Ball::s_Shader.setUniform("u_DiffuseIntensity", m_LightProps.diffuseIntensity);
@@ -122,7 +125,7 @@ void Game::render() {
 		for (const Ball &ball : m_Balls)
 			ball.renderDebug(m_Window);
 
-	sf::Clock debugRenderTimeClock;
+	const sf::Clock debugRenderTimeClock;
 	if (m_Options.renderPocket)
 		Pocket::renderDebug(m_Window);
 	m_PerfStats.debugRenderTime = debugRenderTimeClock.getElapsedTime();

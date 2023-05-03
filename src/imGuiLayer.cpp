@@ -31,6 +31,7 @@ void ImGuiLayer::render(const PerformanceStats &performanceStats) const {
 		ImGui::Text("FPS: %i", performanceStats.fps);
 		ImGui::Text("Frame time: %.10f ms", performanceStats.frameTimeMs);
 
+		ImGui::Text("Physics update time: %.10f ms", performanceStats.physicsUpdateTime.asMicroseconds() * 0.001f);
 		ImGui::Text("Balls render time: %.10f ms", performanceStats.ballsRenderTime.asMicroseconds() * 0.001f);
 		ImGui::Text("Debug render time: %.10f ms", performanceStats.debugRenderTime.asMicroseconds() * 0.001f);
 	}
