@@ -17,6 +17,7 @@ void Audio::init() {
 	addBuffer(AudioType::BALL_WITH_TABLE_COLLISION, "assets/audio/table_collision.wav");
 	addBuffer(AudioType::CUE_HIT, "assets/audio/cue_hit.wav");
 	addBuffer(AudioType::POCKET, "assets/audio/pocket.wav");
+	addBuffer(AudioType::TURN, "assets/audio/turn.wav");
 }
 
 sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
@@ -26,10 +27,9 @@ sf::SoundBuffer &Audio::getSoundBuffer(Audio::AudioType type) {
 }
 
 void Audio::play(sf::Sound &sound, AudioType type, float volume, float pitch) {
-	if (sound.getStatus() == sf::SoundSource::Status::Playing)
-		return;
+	const sf::SoundBuffer &buf = getSoundBuffer(type);
 
-	sound.setBuffer(getSoundBuffer(type));
+	sound.setBuffer(buf);
 	sound.setVolume(volume);
 	sound.setPitch(pitch);
 	sound.play();

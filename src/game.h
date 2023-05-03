@@ -43,6 +43,9 @@ class Game {
   private:
 	static Game *s_Instance;
 
+	bool m_AllBallsStopedLastFrame = true;
+	bool m_AllBallsStoped = true;
+
 	friend ImGuiLayer;
 	GameOptions m_Options;
 
@@ -62,4 +65,5 @@ class Game {
 
 	sf::View m_View;
 	sf::Time m_FrameTime;
+	sf::Sound m_Sound;
 };

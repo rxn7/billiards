@@ -9,6 +9,7 @@ namespace Audio {
 		BALL_WITH_TABLE_COLLISION,
 		CUE_HIT,
 		POCKET,
+		TURN,
 	};
 
 	void init();

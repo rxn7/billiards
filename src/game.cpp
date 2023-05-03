@@ -78,6 +78,10 @@ void Game::update() {
 	}
 
 	Physics::update(dt);
+	m_AllBallsStoped = allBallsStopped();
+
+	if (m_AllBallsStoped && !m_AllBallsStopedLastFrame)
+		Audio::play(m_Sound, Audio::AudioType::TURN);
 
 	for (Ball &ball : m_Balls)
 		ball.update(dt);
@@ -85,6 +89,8 @@ void Game::update() {
 	mp_Cue->update(dt);
 
 	m_ImGuiLayer.update(m_FrameTime);
+
+	m_AllBallsStopedLastFrame = m_AllBallsStoped;
 }
 
 void Game::render() {
@@ -172,7 +178,7 @@ void Game::handleEvent(const sf::Event &event) {
 	}
 
 	case sf::Event::MouseButtonPressed: {
-		if (!allBallsStopped())
+		if (!m_AllBallsStoped)
 			break;
 
 		const sf::Vector2f mousePositionWorld(m_Window.mapPixelToCoords(sf::Mouse::getPosition(m_Window)));
