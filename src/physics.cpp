@@ -53,42 +53,43 @@ void Physics::step(float ts) {
 			if (ball.getNumber() == target.getNumber() || target.m_InPocket)
 				continue;
 
-			const float distanceSquared = MathUtils::lengthSqr(ball.m_Position - target.m_Position);
-			if (distanceSquared + Physics::COLLISION_MARGIN >= Ball::DIAMETER * Ball::DIAMETER)
-				continue;
-
-			const float distance = std::sqrt(distanceSquared);
-			const float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
-
-			const sf::Vector2f displace = (ball.m_Position - target.m_Position) * overlap;
-			ball.m_Position -= displace;
-			target.m_Position += displace;
-
-			collisions.emplace_back(&ball, &target);
+			resolveCollision(ball, target);
 		}
 
 		const Table &table = Game::getInstance().getTable();
 		resolveTableCollision(ball, table.isBallOverlapping(ball), table);
 	}
-
-	for (const Collision &col : collisions)
-		resolveCollision(*col.ball, *col.target);
 }
 
 void Physics::resolveCollision(Ball &a, Ball &b) {
-	const sf::Vector2f positionDelta = a.m_Position - b.m_Position;
-	const sf::Vector2f velocityDelta = a.m_Velocity - b.m_Velocity;
-	const float distance = MathUtils::length(positionDelta);
+	sf::Vector2f positionDelta = a.m_Position - b.m_Position;
+	float distanceSquared = MathUtils::lengthSqr(positionDelta);
+
+	if (distanceSquared > Ball::DIAMETER_SQR)
+		return;
+
+	float distance = glm::sqrt(distanceSquared);
+	const float overlap = (distance - Ball::DIAMETER) * 0.5f / distance;
+
+	const sf::Vector2f correction = positionDelta * overlap;
+	a.m_Position -= correction;
+	b.m_Position += correction;
+
+	positionDelta = a.m_Position - b.m_Position;
+	distanceSquared = MathUtils::lengthSqr(positionDelta);
+	distance = glm::sqrt(distanceSquared);
+
+	const sf::Vector2f relativeVelocity = b.m_Velocity - a.m_Velocity;
 	const sf::Vector2f normal = positionDelta / distance;
 
-	const float force = 2.0f * (normal.x * velocityDelta.x + normal.y * velocityDelta.y) / (Ball::MASS * 2.0f);
-	const sf::Vector2f forceVector = force * Ball::MASS * normal;
+	const float impulse = glm::dot<2, float>(glm::vec2(relativeVelocity.x, relativeVelocity.y), glm::vec2(normal.x, normal.y)) * 2.0f / (Ball::MASS * 2.0f);
+	const sf::Vector2f force = impulse * normal;
 
-	a.m_Velocity -= forceVector;
-	b.m_Velocity += forceVector;
+	a.m_Velocity += force;
+	b.m_Velocity -= force;
 
-	const float forcePercentage = std::clamp(std::fabs(force) / 1000.0f, 0.0f, 1.0f);
-	Audio::play(a.m_Sound, Audio::AudioType::BALL_WITH_BALL_COLLISION, forcePercentage * 100.0f, (1.0f + forcePercentage) * 0.5f);
+	// const float forcePercentage = std::clamp(std::fabs(force) / 1000.0f, 0.0f, 1.0f);
+	// Audio::play(a.m_Sound, Audio::AudioType::BALL_WITH_BALL_COLLISION, forcePercentage * 100.0f, (1.0f + forcePercentage) * 0.5f);
 }
 
 void Physics::resolveTableCollision(Ball &ball, const Table::OverlapResult &result, const Table &table) {

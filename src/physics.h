@@ -4,7 +4,7 @@
 #include "table.h"
 
 namespace Physics {
-	constexpr float COLLISION_MARGIN = 0.001f;
+	constexpr float EPSILON = 0.001f;
 	constexpr std::uint32_t MIN_STEPS_PER_SEC = 0u;
 	constexpr std::uint32_t MAX_STEPS_PER_SEC = 100000u;
 

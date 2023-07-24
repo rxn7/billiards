@@ -143,8 +143,8 @@ void Game::rackBalls() {
 		ball.m_InPocket = false;
 	}
 
-	static const float width = std::sqrt(3.0f) * Ball::RADIUS + Physics::COLLISION_MARGIN;
-	static constexpr float height = Ball::DIAMETER + Physics::COLLISION_MARGIN;
+	static const float width = std::sqrt(3.0f) * Ball::RADIUS + Physics::EPSILON;
+	static constexpr float height = Ball::DIAMETER + Physics::EPSILON;
 
 	int idx = 0;
 	for (int row = 0; row < 5; ++row) {
